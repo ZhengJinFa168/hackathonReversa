@@ -39,8 +39,8 @@ BATCH = 1000
 
 # --- LLM (OpenRouter) ------------------------------------------------------
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
-LLM_MODEL = os.getenv("LLM_MODEL", "anthropic/claude-haiku-4.5")
-LLM_MODEL_SECOND = os.getenv("LLM_MODEL_SECOND", "openai/gpt-4o")
+LLM_MODEL = os.getenv("LLM_MODEL", "deepseek/deepseek-v4-flash")
+LLM_MODEL_SECOND = os.getenv("LLM_MODEL_SECOND", "google/gemini-2.5-flash-lite")
 LLM_MODEL_HARD = os.getenv("LLM_MODEL_HARD", "deepseek/deepseek-v4-pro")
 LLM_CONCURRENCY = int(os.getenv("LLM_CONCURRENCY", "12"))
 LLM_MAX_PAIRS_PER_TRACK = 2000

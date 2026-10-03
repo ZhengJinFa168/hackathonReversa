@@ -84,8 +84,15 @@ def judge_prompt(track: str, row) -> str:
 
 
 def judge(track: str, row, model: str | None = None) -> dict:
-    return llm.complete(judge_prompt(track, row), JUDGE_SCHEMA, model=model, system=JUDGE_SYSTEM,
-                        max_tokens=config.JUDGE_MAX_TOKENS, tag=f"judge_{track}")
+    kw = dict(system=JUDGE_SYSTEM, max_tokens=config.JUDGE_MAX_TOKENS, tag=f"judge_{track}")
+    try:
+        return llm.complete(judge_prompt(track, row), JUDGE_SCHEMA, model=model, **kw)
+    except llm.LLMError:
+        if model is not None:
+            raise
+        # the main model returned invalid JSON twice: fall back to the hard-case model for this pair
+        return {**llm.complete(judge_prompt(track, row), JUDGE_SCHEMA, model=config.LLM_MODEL_HARD, **kw),
+                "fallback_model": config.LLM_MODEL_HARD}
 
 
 def judge_pairs(track: str) -> pd.DataFrame:
@@ -206,9 +213,15 @@ def _parts(text: str, max_words: int = 4500) -> list[str]:
 
 def code_comment(text: str) -> dict:
     parts = _parts(text)
-    res = [llm.complete(STANCE_PROMPT.format(na=NA, codebook=_codebook(), part=k + 1, parts=len(parts), text=p),
-                        _stance_schema(), system=STANCE_SYSTEM, max_tokens=config.STANCE_MAX_TOKENS, tag="stance")
-           for k, p in enumerate(parts)]
+    def one(k: int, p: str) -> dict:
+        prompt = STANCE_PROMPT.format(na=NA, codebook=_codebook(), part=k + 1, parts=len(parts), text=p)
+        kw = dict(system=STANCE_SYSTEM, max_tokens=config.STANCE_MAX_TOKENS, tag="stance")
+        try:
+            return llm.complete(prompt, _stance_schema(), **kw)
+        except llm.LLMError:  # invalid JSON twice: fall back to the hard-case model
+            return llm.complete(prompt, _stance_schema(), model=config.LLM_MODEL_HARD, **kw)
+
+    res = [one(k, p) for k, p in enumerate(parts)]
     out = {}
     for i in ISSUES:
         found = [(r[i["issue_id"]]["stance"], r[i["issue_id"]]["quote"]) for r in res if r[i["issue_id"]]["stance"] != NA]
