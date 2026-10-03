@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lobby Echo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f5f4f0; --surface: #ffffff; --surface-2: #faf9f6; --border: #e4e2dc; --border-2: #d6d3cb;
+  --text: #121212; --text-2: #4f4e4a; --text-3: #85837d;
+  --accent: #2547d0; --accent-soft: #e8ecfb;
+  --ngo: #1f9d6b; --company: #e0632f; --assoc: #2a78d6; --union: #b47b00; --consumer: #c2508a; --other: #8a8984;
+  --ins: #d5f2e3; --ins-fg: #0b5d3b; --del: #fbe1de; --del-fg: #8d2620; --hl: rgba(255, 196, 0, .38);
+  --good: #1f9d6b; --bad: #c8412f; --shadow: 0 1px 2px rgba(20,20,20,.04), 0 4px 16px rgba(20,20,20,.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #111110; --surface: #1a1a18; --surface-2: #151514; --border: #2c2b28; --border-2: #3a3935;
+    --text: #f4f3ef; --text-2: #c2c0b8; --text-3: #8d8b83;
+    --accent: #7d97ff; --accent-soft: #1f2645;
+    --ngo: #35c48c; --company: #f08350; --assoc: #5a9cf0; --union: #dca62a; --consumer: #e47bb0; --other: #8d8b83;
+    --ins: #113d29; --ins-fg: #a6ecc8; --del: #47201c; --del-fg: #f4b0a8; --hl: rgba(255, 196, 0, .28);
+    --good: #35c48c; --bad: #f07a68; --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111110; --surface: #1a1a18; --surface-2: #151514; --border: #2c2b28; --border-2: #3a3935;
+  --text: #f4f3ef; --text-2: #c2c0b8; --text-3: #8d8b83;
+  --accent: #7d97ff; --accent-soft: #1f2645;
+  --ngo: #35c48c; --company: #f08350; --assoc: #5a9cf0; --union: #dca62a; --consumer: #e47bb0; --other: #8d8b83;
+  --ins: #113d29; --ins-fg: #a6ecc8; --del: #47201c; --del-fg: #f4b0a8; --hl: rgba(255, 196, 0, .28);
+  --good: #35c48c; --bad: #f07a68; --shadow: none;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.serif { font-family: Newsreader, Georgia, serif; }
+header.top { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border); }
+.bar { max-width: 1200px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.brand { font-weight: 700; letter-spacing: -.01em; font-size: 16px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.brand .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.actchip { font-size: 12.5px; padding: 3px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+nav.main { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; }
+nav.main a { color: var(--text-2); padding: 6px 11px; border-radius: 8px; font-size: 14px; }
+nav.main a.on { background: var(--surface); color: var(--text); box-shadow: var(--shadow); border: 1px solid var(--border); }
+nav.main a:hover { text-decoration: none; color: var(--text); }
+main { max-width: 1200px; margin: 0 auto; padding: 28px 16px 80px; }
+h1 { font: 600 40px/1.1 Newsreader, Georgia, serif; letter-spacing: -.015em; margin: 0 0 10px; }
+h2 { font-size: 20px; margin: 0 0 12px; letter-spacing: -.01em; }
+h3 { font-size: 13px; margin: 0 0 8px; color: var(--text-2); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+.lead { font-size: 17px; color: var(--text-2); max-width: 820px; margin: 0 0 24px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; box-shadow: var(--shadow); min-width: 0; }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.g-side { grid-template-columns: minmax(0, 1fr) 340px; }
+@media (max-width: 960px) { .g2, .g3, .g4, .g-side { grid-template-columns: 1fr; } h1 { font-size: 32px; } }
+.mt { margin-top: 16px; } .mt2 { margin-top: 28px; }
+.stat .v { font-size: 30px; font-weight: 650; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.stat .l { color: var(--text-2); font-size: 13px; }
+.stat .s { color: var(--text-3); font-size: 12px; margin-top: 2px; }
+.muted { color: var(--text-3); }
+.small { font-size: 13px; }
+.badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px;
+  border: 1px solid var(--border-2); color: var(--text-2); background: var(--surface-2); white-space: nowrap; }
+.badge.good { color: var(--good); border-color: color-mix(in srgb, var(--good) 40%, transparent); background: color-mix(in srgb, var(--good) 10%, transparent); }
+.badge.bad { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 40%, transparent); background: color-mix(in srgb, var(--bad) 8%, transparent); }
+.badge.acc { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); background: var(--accent-soft); }
+.tdot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.acts { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 0 0 28px; }
+.act { text-align: left; font: inherit; color: inherit; cursor: pointer; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
+.act.on { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.act[disabled] { cursor: not-allowed; opacity: .55; }
+.act .n { font-weight: 650; } .act .p { font-size: 12.5px; color: var(--text-3); }
+.rank { display: grid; grid-template-columns: 36px minmax(0, 2.4fr) 1.4fr repeat(4, 74px) 92px; gap: 10px; align-items: center;
+  padding: 11px 6px; border-bottom: 1px solid var(--border); cursor: pointer; }
+.rank:hover { background: var(--surface-2); }
+.rank.head { cursor: default; font-size: 11.5px; color: var(--text-3); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+.rank.head:hover { background: none; }
+.rank .num { text-align: right; font-variant-numeric: tabular-nums; }
+.rank .pos { color: var(--text-3); font-variant-numeric: tabular-nums; }
+.barwrap { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; border: 1px solid var(--border); }
+.barwrap > div { height: 100%; border-radius: 99px; }
+@media (max-width: 860px) { .rank { grid-template-columns: 28px 1fr 70px 70px; } .rank .hide-s { display: none; } }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+select, input[type=search], button { font: inherit; font-size: 14px; padding: 7px 11px; border-radius: 9px; border: 1px solid var(--border-2);
+  background: var(--surface); color: var(--text); }
+button { cursor: pointer; } button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 16px; font-size: 14px; }
+.kv > div:nth-child(odd) { color: var(--text-3); }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { color: var(--text-3); font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; }
+tr.click { cursor: pointer; } tr.click:hover td { background: var(--surface-2); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12.5px; padding: 3px 10px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-2); }
+.person { display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--border); border-radius: 12px; cursor: pointer; background: var(--surface); }
+.person:hover { border-color: var(--border-2); background: var(--surface-2); }
+.avatar { width: 44px; height: 52px; border-radius: 8px; object-fit: cover; background: var(--surface-2); flex: none; display: grid; place-items: center;
+  color: var(--text-3); font-weight: 600; font-size: 14px; border: 1px solid var(--border); overflow: hidden; }
+.avatar.lg { width: 112px; height: 136px; border-radius: 12px; font-size: 30px; }
+.timeline { position: relative; margin-left: 14px; }
+.step { position: relative; padding: 0 0 26px 30px; }
+.step::before { content: ""; position: absolute; left: -1px; top: 6px; bottom: -6px; width: 2px; background: var(--border-2); }
+.step:last-child::before { display: none; }
+.step .knob { position: absolute; left: -9px; top: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--surface);
+  border: 3px solid var(--accent); }
+.step.off .knob { border-color: var(--border-2); }
+.step .when { font-size: 12.5px; color: var(--text-3); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.step .title { font-weight: 650; font-size: 16px; margin: 1px 0 8px; }
+.textbox { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: 14.5px; line-height: 1.6; }
+.textbox.quote { font-family: Newsreader, Georgia, serif; font-size: 16.5px; }
+mark { background: var(--hl); color: inherit; border-radius: 3px; padding: 0 1px; }
+ins { background: var(--ins); color: var(--ins-fg); text-decoration: none; border-radius: 3px; padding: 0 1px; }
+del { background: var(--del); color: var(--del-fg); border-radius: 3px; padding: 0 1px; }
+.gauge { margin: 6px 0 14px; }
+.gauge .row { display: flex; justify-content: space-between; font-size: 13.5px; margin-bottom: 4px; }
+.gauge .track { height: 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 99px; position: relative; overflow: visible; }
+.gauge .fill { height: 100%; border-radius: 99px; background: var(--accent); }
+.gauge .base { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--text-3); }
+.why li { margin: 4px 0; font-size: 13.5px; }
+.why .up { color: var(--good); font-weight: 700; } .why .down { color: var(--bad); font-weight: 700; }
+.callout { border-left: 3px solid var(--accent); padding: 8px 14px; background: var(--accent-soft); border-radius: 0 10px 10px 0; font-size: 14px; }
+.section-title { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 30px 0 12px; }
+.section-title h2 { margin: 0; }
+.plot { width: 100%; }
+.empty { color: var(--text-3); font-size: 14px; padding: 8px 0; }
+.hero { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; align-items: end; margin-bottom: 8px; }
+@media (max-width: 960px) { .hero { grid-template-columns: 1fr; } }
+.footer { color: var(--text-3); font-size: 12.5px; margin-top: 40px; border-top: 1px solid var(--border); padding-top: 14px; }
+</style>
+<script>__PLOTLYJS__</script>
+</head>
+<body>
+<header class="top"><div class="bar">
+  <a class="brand" href="#/"><span class="dot"></span>Lobby Echo</a>
+  <span class="actchip" id="actchip">AI Act · 2021/0106(COD)</span>
+  <nav class="main" id="nav">
+    <a href="#/" data-r="">Overview</a><a href="#/lobbies" data-r="lobbies">Top lobbies</a><a href="#/story" data-r="story">The story</a>
+    <a href="#/influence" data-r="influence">Pre-bill vs bill</a><a href="#/meps" data-r="meps">Politicians</a><a href="#/method" data-r="method">Method</a>
+  </nav>
+</div></header>
+<main id="app"></main>
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const ACT = D.acts.find(a => a.ready);
+const app = document.getElementById('app');
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const esc = s => (s == null ? '' : String(s)).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pct = (x, d = 1) => x == null || isNaN(x) ? '–' : (100 * x).toFixed(d) + '%';
+const num = x => x == null || isNaN(x) ? '–' : Number(x).toLocaleString('en');
+const eur = x => x == null || isNaN(x) ? '–' : x === 0 ? 'none declared' : '€' + Math.round(x).toLocaleString('en');
+const TYPES = {NGO: ['NGO', '--ngo'], COMPANY: ['Company', '--company'], BUSINESS_ASSOCIATION: ['Business association', '--assoc'],
+  TRADE_UNION: ['Trade union', '--union'], CONSUMER_ORGANISATION: ['Consumer organisation', '--consumer']};
+const tname = t => (TYPES[t] || [t || 'Other'])[0];
+const tcol = t => css((TYPES[t] || [0, '--other'])[1]);
+const tdot = t => `<span class="tdot" style="background:${tcol(t)}"></span>`;
+const GROUPS = {PPE: 'EPP', 'S&D': 'S&D', RE: 'Renew', 'Verts/ALE': 'Greens/EFA', ID: 'ID', ECR: 'ECR', 'GUE/NGL': 'The Left', NA: 'Non-attached'};
+const gname = g => GROUPS[g] || g || '–';
+const FUNNEL = D.influence.funnel, BASE = FUNNEL.find(r => String(r.user_type).startsWith('ALL'));
+const LOBBIES = Object.values(D.lobbies);
+const initials = n => (n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+const avatar = (m, lg) => m && m.photo ? `<img class="avatar${lg ? ' lg' : ''}" src="${esc(m.photo)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=&quot;avatar${lg ? ' lg' : ''}&quot;>${esc(initials(m.name))}</div>'">`
+  : `<div class="avatar${lg ? ' lg' : ''}">${esc(initials(m && m.name))}</div>`;
+const PL = (extra) => Object.assign({paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', font: {family: 'Inter, system-ui', color: css('--text'), size: 12},
+  margin: {l: 50, r: 16, t: 10, b: 40}, xaxis: {gridcolor: css('--border'), zerolinecolor: css('--border')},
+  yaxis: {gridcolor: css('--border'), zerolinecolor: css('--border')}, legend: {orientation: 'h', y: -0.18}}, extra || {});
+const CFG = {displayModeBar: false, responsive: true};
+
+// ------------------------------------------------------------ text helpers
+const STOP = new Set('the and for that with this from shall which such are have has not but their they into been also other where when should would could than then its any all may can more most these those whether under including within upon order being only them there what will were your about between'.split(' '));
+const toks = s => (s || '').toLowerCase().match(/[a-zà-ÿ0-9]+/g) || [];
+function highlight(text, other) {
+  const ow = new Set(toks(other).filter(w => w.length > 3 && !STOP.has(w)));
+  return esc(text).replace(/[A-Za-zÀ-ÿ0-9]+/g, w => ow.has(w.toLowerCase()) ? `<mark>${w}</mark>` : w);
+}
+function diff(a, b) {  // word-level LCS diff -> html with <del>/<ins>
+  const A = (a || '').split(/\s+/).filter(Boolean), B = (b || '').split(/\s+/).filter(Boolean);
+  if (A.length * B.length > 400000) return esc(b);
+  const n = A.length, m = B.length, L = Array.from({length: n + 1}, () => new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) L[i][j] = A[i] === B[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+  const out = []; let i = 0, j = 0;
+  while (i < n && j < m) {
+    if (A[i] === B[j]) { out.push(esc(A[i])); i++; j++; }
+    else if (L[i + 1][j] >= L[i][j + 1]) { out.push(`<del>${esc(A[i])}</del>`); i++; }
+    else { out.push(`<ins>${esc(B[j])}</ins>`); j++; }
+  }
+  while (i < n) out.push(`<del>${esc(A[i++])}</del>`);
+  while (j < m) out.push(`<ins>${esc(B[j++])}</ins>`);
+  return out.join(' ').replace(/<\/del> <del>/g, ' ').replace(/<\/ins> <ins>/g, ' ');
+}
+const trunc = (s, n) => !s ? '' : s.length > n ? s.slice(0, n).replace(/\s+\S*$/, '') + '…' : s;
+
+// ------------------------------------------------------------ pages
+function overview() {
+  const top = [...LOBBIES].sort((a, b) => b.influence - a.influence).slice(0, 5);
+  const st = D.stories[D.featured];
+  app.innerHTML = `
+  <div class="hero"><div>
+    <h1>Who shaped the ${esc(ACT.name)}?</h1>
+    <p class="lead">We followed every public comment on the ${esc(ACT.short)} through the Parliament's committee amendments, the plenary report and into
+    ${esc(ACT.law)}, and asked which organisations' wording made it — and how likely that was.</p>
+  </div><div class="callout"><b>An echo</b> is lobby wording that reappears in an amendment above a chance threshold, checked by an AI judge.
+    It shows similar text, not proof that the lobby caused it.</div></div>
+  <h3>Choose an act</h3>
+  <div class="acts">${D.acts.map(a => `<button class="act${a.ready ? ' on' : ''}" ${a.ready ? '' : 'disabled'}>
+    <div class="n">${esc(a.name)}</div><div class="p">${esc(a.id)} · ${esc(a.law)}</div>
+    <div class="p" style="margin-top:4px">${a.ready ? '<span class="badge acc">processed</span>' : 'not processed yet: run the pipeline on this procedure'}</div></button>`).join('')}</div>
+  <div class="grid g4">
+    ${stat(num(D.counts.nodes.Comment), 'public comments', '2020 inception + 2021 proposal')}
+    ${stat(num(D.counts.nodes.Organisation), 'organisations', 'companies, associations, NGOs, unions')}
+    ${stat(num(D.counts.nodes.Amendment), 'committee amendments', 'tabled by ' + num(Object.values(D.meps).filter(m => m.tabled).length) + ' MEPs')}
+    ${stat(pct(BASE.amendment_share_reached_law), 'of amendments reached the law', pct(BASE.amendment_share_survived) + ' survived into the EP report')}
+  </div>
+  <div class="grid g2 mt">
+    <div class="card"><h3>Most influential lobbies</h3>${top.map((o, i) => `<div class="rank" style="grid-template-columns:28px 1fr 90px" onclick="go('#/lobby/${encodeURIComponent(o.org_id)}')">
+      <span class="pos">${i + 1}</span><span>${tdot(o.type)}<b>${esc(o.name)}</b><div class="muted small">${tname(o.type)} · ${o.n_echoed} echoed amendments · ${o.n_law} in law</div></span>
+      <span class="num"><b>${Math.round(o.influence).toLocaleString('en')}</b><div class="muted small">score</div></span></div>`).join('')}
+      <div class="mt"><a href="#/lobbies">See all lobbies →</a></div></div>
+    <div class="card"><h3>The story: from a comment to the law</h3>
+      <div class="title serif" style="font-size:22px;margin:4px 0 8px">${esc(st.org_name)} → ${esc(st.location)}</div>
+      <div class="textbox quote">“${esc(trunc(st.chunk, 260))}”</div>
+      <div class="chips mt">${outcomeBadges(st)}</div>
+      <div class="mt"><a href="#/story/${D.featured}">Follow this comment into the law →</a></div></div>
+  </div>
+  <div class="card mt"><h3>Do echoed amendments go further?</h3><div id="p_funnel" class="plot" style="height:330px"></div>
+    <p class="muted small">Share of amendments echoing each type of organisation that survived into the EP report and reached the final law, against all amendments (dotted).</p></div>`;
+  funnelPlot('p_funnel');
+}
+const stat = (v, l, s) => `<div class="card stat"><div class="v">${v}</div><div class="l">${l}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
+function outcomeBadges(s) {
+  return `${s.survived ? '<span class="badge good">survived EP report</span>' : '<span class="badge bad">dropped before the report</span>'}
+    ${s.law ? `<span class="badge good">reached the law · ${esc((s.law_unit || '').replace('2024/1689:', ''))}</span>` : (s.survived ? '<span class="badge bad">not in final law</span>' : '')}
+    ${s.verbatim ? `<span class="badge acc">verbatim · ${s.run} words</span>` : ''}`;
+}
+function funnelPlot(id) {
+  const rows = FUNNEL.filter(r => !String(r.user_type).startsWith('ALL'));
+  Plotly.newPlot(id, [
+    {type: 'bar', name: 'survived EP report', x: rows.map(r => tname(r.user_type)), y: rows.map(r => r.amendment_share_survived), marker: {color: css('--assoc')},
+      text: rows.map(r => pct(r.amendment_share_survived)), textposition: 'outside', cliponaxis: false},
+    {type: 'bar', name: 'reached the law', x: rows.map(r => tname(r.user_type)), y: rows.map(r => r.amendment_share_reached_law), marker: {color: css('--ngo')},
+      text: rows.map(r => pct(r.amendment_share_reached_law)), textposition: 'outside', cliponaxis: false}],
+    PL({barmode: 'group', yaxis: {tickformat: '.0%', gridcolor: css('--border')}, margin: {l: 45, r: 10, t: 20, b: 50},
+      shapes: [BASE.amendment_share_survived, BASE.amendment_share_reached_law].map((y, i) => ({type: 'line', xref: 'paper', x0: 0, x1: 1, y0: y, y1: y,
+        line: {dash: 'dot', width: 1.5, color: i ? css('--ngo') : css('--assoc')}}))}), CFG);
+}
+
+// ------------------------------------------------------------ top lobbies
+let LSORT = 'influence', LTYPE = '';
+function lobbiesPage() {
+  const rows = LOBBIES.filter(o => (o.n_echoed || o.n_positions) && (!LTYPE || o.type === LTYPE))
+    .sort((a, b) => (b[LSORT] || 0) - (a[LSORT] || 0)).slice(0, 60);
+  const max = Math.max(...rows.map(o => o.influence || 0), 1);
+  app.innerHTML = `<h1>Top lobbies</h1>
+  <p class="lead">Ranked by <b>influence score</b>: every judged echo of an organisation's 2021 comment in a committee amendment, weighted by match strength and tier,
+    and counted up to three times when the amendment survived into the EP report and again when it reached the law.</p>
+  <div class="controls"><select id="ltype"><option value="">All organisation types</option>${Object.keys(TYPES).map(t => `<option value="${t}" ${t === LTYPE ? 'selected' : ''}>${tname(t)}</option>`).join('')}</select>
+    <select id="lsort">${[['influence', 'Sort by influence score'], ['n_law', 'Sort by amendments in the law'], ['n_echoed', 'Sort by echoed amendments'], ['cost', 'Sort by lobbying spend'], ['aligned_share', 'Sort by pre-bill alignment']]
+      .map(([k, l]) => `<option value="${k}" ${k === LSORT ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+  <div class="card" style="padding:6px 14px">
+    <div class="rank head"><span>#</span><span>Organisation</span><span class="hide-s">Influence</span><span class="num">Echoed</span><span class="num hide-s">Survived</span>
+      <span class="num">In law</span><span class="num hide-s">Pre-bill</span><span class="num hide-s">Spend</span></div>
+    ${rows.map((o, i) => `<div class="rank" onclick="go('#/lobby/${encodeURIComponent(o.org_id)}')"><span class="pos">${i + 1}</span>
+      <span>${tdot(o.type)}<b>${esc(o.name)}</b><div class="muted small">${tname(o.type)} · ${esc(o.country || '')}</div></span>
+      <span class="hide-s"><div class="barwrap"><div style="width:${100 * (o.influence || 0) / max}%;background:${tcol(o.type)}"></div></div><div class="muted small">${Math.round(o.influence).toLocaleString('en')}</div></span>
+      <span class="num">${o.n_echoed}</span><span class="num hide-s">${o.n_survived}</span><span class="num"><b>${o.n_law}</b></span>
+      <span class="num hide-s">${o.aligned_share == null ? '–' : pct(o.aligned_share, 0)}</span><span class="num hide-s">${o.cost == null ? '–' : eur(o.cost)}</span></div>`).join('')}
+  </div>
+  <p class="muted small">Pre-bill = share of the organisation's 2020 positions that the Commission's proposal adopted. Spend = latest register figure (2026), not 2021.</p>`;
+  ltype.onchange = () => { LTYPE = ltype.value; lobbiesPage(); };
+  lsort.onchange = () => { LSORT = lsort.value; lobbiesPage(); };
+}
+
+// ------------------------------------------------------------ lobby profile
+function storyIndex(org, am) { return D.stories.findIndex(s => s.org === org && s.am === am); }
+function lobbyPage(id) {
+  const o = D.lobbies[id]; if (!o) return notFound();
+  const comm = o.comments || [];
+  const best = D.stories.map((s, i) => [s, i]).filter(([s]) => s.org === id);
+  const carriers = (o.carriers || []).map(c => [c, D.meps[String(c.mep)] || {name: c.name}]);
+  app.innerHTML = `
+  <div class="controls"><a href="#/lobbies">← Top lobbies</a></div>
+  <div class="grid g-side"><div>
+    <span class="badge" style="border-color:${tcol(o.type)};color:${tcol(o.type)}">${tname(o.type)}</span>
+    <h1 style="margin-top:8px">${esc(o.name)}</h1>
+    <p class="lead">${esc(o.country || '')}${o.register_name && o.register_name !== o.name ? ' · registered as ' + esc(o.register_name) : ''}${o.reg_date ? ' · in the EU Transparency Register since ' + esc(o.reg_date.slice(0, 4)) : ''}</p>
+  </div><div class="card"><div class="kv">
+    <div>Influence score</div><div><b>${Math.round(o.influence).toLocaleString('en')}</b></div>
+    <div>Rank</div><div>#${[...LOBBIES].sort((a, b) => b.influence - a.influence).findIndex(x => x.org_id === id) + 1} of ${LOBBIES.length}</div>
+    <div>Coalition</div><div>${o.coalition == null ? '–' : 'community ' + o.coalition}</div>
+  </div></div></div>
+  <div class="grid g4 mt">
+    ${stat(o.n_echoed, 'amendments echo their wording', o.n_verbatim + ' word for word')}
+    ${stat(o.n_survived, 'survived into the EP report', o.n_echoed ? pct(o.n_survived / o.n_echoed, 0) + ' of echoed vs ' + pct(BASE.amendment_share_survived, 0) + ' base' : '')}
+    ${stat(o.n_law, 'reached the final law', o.expected_law != null ? 'model expected ' + o.expected_law.toFixed(1) : '')}
+    ${stat(o.aligned_share == null ? '–' : pct(o.aligned_share, 0), 'pre-bill positions adopted', o.n_positions ? o.n_positions + ' positions coded from the 2020 comment' : 'no 2020 comment')}
+  </div>
+  <div class="grid g2 mt">
+    <div class="card"><h3>Money and access</h3><div class="kv">
+      <div>Lobbying spend</div><div>${eur(o.cost)}${o.cost_range ? ' <span class="muted">(band midpoint)</span>' : ''}</div>
+      <div>Lobbyists (FTE)</div><div>${o.fte ?? '–'}</div>
+      <div>EP access passes</div><div>${num(o.ep_passes)}</div>
+      <div>Commission meetings</div><div>${num(o.ec_meetings)} <span class="muted">in 2019–24 (${num(o.ec_meetings_all)} all-time)</span></div>
+      <div>MEP meetings declared</div><div>${num(o.mep_meetings_register)}</div>
+      <div>Recorded MEP meetings</div><div>${(o.meetings || []).length} <span class="muted">(${(o.meetings || []).filter(m => m.ai).length} about AI)</span></div>
+      ${o.lobbyfacts_url ? `<div>Register</div><div><a href="${esc(o.lobbyfacts_url)}" target="_blank" rel="noopener">LobbyFacts datacard ↗</a></div>` : ''}
+    </div><p class="muted small">Register figures are the 2026 snapshot, not 2021.${o.match_method && o.match_method !== 'tr_number' ? ' Matched to the register by ' + esc(o.match_method.replace(/_/g, ' ')) + '.' : ''}</p></div>
+    <div class="card"><h3>Interests</h3><div class="kv">
+      <div>Category</div><div>${esc(o.category || '–')}</div><div>Represents</div><div>${esc(o.interest || '–')}</div>
+      <div>Head office</div><div>${esc(o.head_office || o.country || '–')}</div><div>Size</div><div>${esc(o.size || '–')}</div></div>
+      <div class="chips mt">${(o.fields || []).map(f => `<span class="chip">${esc(f)}</span>`).join('') || '<span class="muted small">no fields of interest declared</span>'}</div></div>
+  </div>
+  <div class="section-title"><h2>What they said</h2><span class="muted small">${comm.map(c => `<a href="${esc(c.url)}" target="_blank" rel="noopener">${c.track === 'A' ? '2020 inception comment' : '2021 proposal comment'} (${esc(c.date)}) ↗</a>`).join(' · ')}</span></div>
+  <div class="grid g2">
+    <div class="card"><h3>Their words that came back</h3>${best.slice(0, 3).map(([s, i]) => `<div style="margin-bottom:14px"><div class="textbox quote">“${highlight(trunc(s.chunk, 330), s.added)}”</div>
+      <div class="small mt" style="margin-top:6px">→ <a href="#/story/${i}">${esc(s.location)}</a> · ${outcomeBadges(s)}</div></div>`).join('') || '<div class="empty">No judged echo in a committee amendment.</div>'}</div>
+    <div class="card"><h3>Positions in 2020 (pre-bill)</h3>${(o.positions || []).length ? `<table><thead><tr><th>Issue</th><th>Their stance</th><th>Proposal</th></tr></thead><tbody>
+      ${o.positions.map(p => `<tr><td>${esc(p.label)}</td><td>${esc(p.stance.replace(/_/g, ' '))}${p.quote ? `<div class="muted small">“${esc(trunc(p.quote, 140))}”</div>` : ''}</td>
+      <td>${p.aligned == null ? '<span class="muted">–</span>' : p.aligned ? '<span class="badge good">adopted</span>' : '<span class="badge bad">not adopted</span>'}</td></tr>`).join('')}</tbody></table>`
+      : '<div class="empty">No 2020 comment.</div>'}</div>
+  </div>
+  <div class="section-title"><h2>Where their wording went</h2><span class="muted small">${o.n_echoed} committee amendments · click a row for the full story</span></div>
+  <div class="card" style="overflow:auto"><table><thead><tr><th>Amendment</th><th>Lead MEP</th><th>Judge</th><th>Outcome</th><th class="r">P(survive)</th><th class="r">P(law)</th></tr></thead><tbody>
+    ${(o.echoed || []).map(e => { const si = storyIndex(id, e.am); return `<tr class="${si >= 0 ? 'click' : ''}" ${si >= 0 ? `onclick="go('#/story/${si}')"` : ''}>
+      <td><b>${esc(e.location || e.am)}</b><div class="muted small">${esc(e.am)} · ${esc(e.committee)}</div></td>
+      <td>${e.lead_mep ? `<a href="#/mep/${e.lead_mep}" onclick="event.stopPropagation()">${esc(e.lead_mep_name)}</a>` : '–'}</td>
+      <td>${esc(e.relation || '')}<div class="muted small">${e.tier}${e.verbatim ? ' · verbatim' : ''}</div></td>
+      <td>${e.law ? '<span class="badge good">in law</span>' : e.survived ? '<span class="badge">EP report only</span>' : '<span class="badge bad">dropped</span>'}</td>
+      <td class="r">${pct(e.p_survived, 0)}</td><td class="r">${pct(e.p_law, 1)}</td></tr>`; }).join('') || '<tr><td colspan="6" class="empty">None.</td></tr>'}
+  </tbody></table></div>
+  <div class="section-title"><h2>Politicians who carried it</h2><span class="muted small">MEPs who tabled amendments echoing ${esc(o.name)}</span></div>
+  <div class="grid g3">${carriers.slice(0, 9).map(([c, m]) => `<div class="person" onclick="go('#/mep/${c.mep}')">${avatar(m)}<div><b>${esc(m.name)}</b>
+    <div class="muted small">${gname(c.grp)}${m.country ? ' · ' + esc(m.country) : ''}</div><div class="small">${c.amendments} amendment${c.amendments > 1 ? 's' : ''}${c.law ? ` · <b>${c.law} in law</b>` : ''}
+    ${(o.meetings || []).some(x => x.mep === c.mep) ? ' · <span class="badge acc">met them</span>' : ''}</div></div></div>`).join('') || '<div class="empty">None.</div>'}</div>
+  <div class="grid g2 mt">
+    <div class="card"><h3>Recorded meetings with MEPs</h3>${(o.meetings || []).length ? `<table><tbody>${o.meetings.slice(0, 25).map(m => `<tr><td class="small muted" style="white-space:nowrap">${esc(m.date)}</td>
+      <td><a href="#/mep/${m.mep}">${esc(m.name)}</a> <span class="muted small">${esc(m.grp)}${m.role && m.role !== 'Member' ? ' · ' + esc(m.role) : ''}</span><div class="small">${esc(m.title || '')} ${m.ai ? '<span class="badge acc">AI</span>' : ''}</div></td></tr>`).join('')}</tbody></table>`
+      : '<div class="empty">No recorded meeting (Integrity Watch covers 2020 and Jun–Oct 2024 only).</div>'}</div>
+    <div class="card"><h3>Shared text with</h3>${(o.similar || []).length ? o.similar.map(s => `<div class="small" style="margin:4px 0"><a href="#/lobby/${encodeURIComponent(s.other)}">${esc(s.name)}</a> <span class="muted">· ${s.chunks} near-identical paragraphs</span></div>`).join('')
+      : '<div class="empty">No near-identical paragraphs with other organisations.</div>'}
+      ${(o.track_a || []).length ? `<h3 class="mt2">2020 wording in the proposal</h3>${o.track_a.slice(0, 6).map(t => `<div class="small" style="margin:4px 0"><b>${esc(t.unit)}</b> · ${esc(t.relation || '')} ${t.in_law ? '<span class="badge good">still in the law</span>' : '<span class="badge bad">changed before the law</span>'}</div>`).join('')}` : ''}</div>
+  </div>`;
+}
+
+// ------------------------------------------------------------ story
+function storyPage(n) {
+  const i = n == null || n === '' ? D.featured : +n, s = D.stories[i]; if (!s) return notFound();
+  const lead = (s.meps || []).find(m => m.lead) || (s.meps || [])[0];
+  const opts = D.stories.map((x, k) => [x, k]).filter(([x]) => x.law).concat(D.stories.map((x, k) => [x, k]).filter(([x]) => !x.law).slice(0, 80));
+  const why = (items) => (items || []).map(w => `<li><span class="${w.effect === 'raises' ? 'up' : 'down'}">${w.effect === 'raises' ? '▲' : '▼'}</span> ${esc(w.feature)}</li>`).join('');
+  const gauge = (label, p, base, actual) => `<div class="gauge"><div class="row"><span>${label}</span><b>${pct(p, 1)}</b></div>
+    <div class="track"><div class="fill" style="width:${Math.min(100, 100 * (p || 0) / Math.max(0.3, (p || 0) * 1.2))}%"></div>
+    <div class="base" style="left:${Math.min(100, 100 * base / Math.max(0.3, (p || 0) * 1.2))}%" title="base rate"></div></div>
+    <div class="row muted small" style="margin-top:3px"><span>base rate ${pct(base, 1)}</span><span>actual: ${actual ? '<b style="color:var(--good)">yes</b>' : '<b style="color:var(--bad)">no</b>'}</span></div></div>`;
+  app.innerHTML = `
+  <div class="controls"><select id="spick" style="max-width:100%">${opts.map(([x, k]) => `<option value="${k}" ${k === i ? 'selected' : ''}>${x.law ? '✓ ' : ''}${esc(x.org_name)} → ${esc(x.location)}</option>`).join('')}</select>
+    <span class="muted small">✓ = reached the law</span></div>
+  <h1>${esc(s.org_name)} → ${esc(s.location)}</h1>
+  <p class="lead">How one paragraph of a ${tname(s.type).toLowerCase()}'s 2021 comment shows up in a committee amendment${s.survived ? ', the Parliament\'s report' : ''}${s.law ? ' and the final law' : ''}.</p>
+  <div class="grid g-side"><div class="card"><div class="timeline">
+    <div class="step"><span class="knob"></span><div class="when">${esc(s.comment_date)} · Have Your Say</div>
+      <div class="title"><a href="#/lobby/${encodeURIComponent(s.org)}">${esc(s.org_name)}</a> comments on the Commission proposal</div>
+      <div class="textbox quote">“${highlight(s.chunk, s.added)}”</div>
+      <div class="small mt" style="margin-top:6px"><a href="${esc(s.url)}" target="_blank" rel="noopener">read the full comment ↗</a> · <mark>highlighted</mark> = words the amendment also uses</div></div>
+    <div class="step"><span class="knob"></span><div class="when">${esc(s.am_date || '')} · committee ${esc(s.committee || '')}</div>
+      <div class="title">Amendment ${esc(s.am)} to ${esc(s.location)}</div>
+      <div class="chips" style="margin-bottom:8px">${(s.meps || []).slice(0, 8).map(m => `<a class="chip" href="#/mep/${m.id}">${m.lead ? '★ ' : ''}${esc(m.name)} · ${gname(m.group)}</a>`).join('')}${(s.meps || []).length > 8 ? `<span class="chip">+${s.meps.length - 8}</span>` : ''}</div>
+      <div class="textbox">${diff(s.old_text || '', s.new_text || '')}</div>
+      <div class="small mt" style="margin-top:6px"><del>struck</del> = proposal words removed · <ins>green</ins> = words the amendment inserts${s.am_src ? ` · <a href="${esc(s.am_src)}" target="_blank" rel="noopener">source PDF ↗</a>` : ''}</div></div>
+    <div class="step ${s.survived ? '' : 'off'}"><span class="knob"></span><div class="when">${s.survived ? esc(s.adopted_date || '2023-06') + ' · EP plenary report' : 'EP plenary report'}</div>
+      ${s.survived ? `<div class="title">Survives as report amendment ${esc(s.adopted)}</div><div class="textbox">${highlight(s.adopted_text, s.added)}</div>
+        <div class="small mt" style="margin-top:6px">survival score ${(+s.survival_score).toFixed(2)} · <mark>highlighted</mark> = words of the committee amendment</div>`
+        : '<div class="title">Not in the Parliament\'s report</div><div class="muted">No report amendment on this provision carries its inserted wording.</div>'}</div>
+    <div class="step ${s.law ? '' : 'off'}"><span class="knob"></span><div class="when">13 June 2024 · ${esc(ACT.law)}</div>
+      ${s.law ? `<div class="title">In the final law: ${esc((s.law_unit || '').replace('2024/1689:', ''))}</div><div class="textbox">${highlight(s.law_text, s.added)}</div>
+        <div class="small mt" style="margin-top:6px">${pct(s.kept, 0)} of the amendment's new words are in the final text</div>`
+        : `<div class="title">${s.survived ? 'Dropped in the trilogue' : 'Did not reach the law'}</div><div class="muted">${s.survived ? 'The report amendment\'s new wording is not in the final act.' : ''}</div>`}</div>
+  </div></div>
+  <div>
+    <div class="card"><h3>How likely was this?</h3>
+      ${gauge('P(survives into the EP report)', s.p_survived, D.influence.metrics.survived.base_rate, s.survived)}
+      ${s.p_law != null ? gauge('P(reaches the final law)', s.p_law, D.influence.metrics.reached_law.base_rate, s.law) : ''}
+      <h3 class="mt">Why</h3><ul class="why" style="padding-left:16px;margin:0">${why(s.x_law && s.x_law.length ? s.x_law : s.x_survived)}</ul>
+      <p class="muted small">Model trained on all ${num(D.influence.metrics.survived.n)} committee amendments (cross-validated AUC ${D.influence.metrics.reached_law.auc_cv.toFixed(2)}). See <a href="#/influence">Pre-bill vs bill</a>.</p></div>
+    <div class="card mt"><h3>The match</h3><div class="kv">
+      <div>AI judge</div><div><b>${esc(s.relation)}</b> · ${esc(s.direction)} the rules</div>
+      <div>Tier</div><div>${esc(s.tier)}${s.verbatim ? ' · verbatim' : ''}</div>
+      <div>Longest shared run</div><div>${s.run} words</div>
+      <div>Match score</div><div>${(+s.score).toFixed(1)} <span class="muted">(chance threshold ≈ ${(+(D.thresholds.s08?.B?.tau_match || 3.2)).toFixed(1)})</span></div>
+      <div>Meeting recorded</div><div>${s.carrier_met ? `<span class="badge acc">yes, ${esc(s.carrier_met)}</span>` : '<span class="muted">none recorded</span>'}</div></div>
+      ${s.quote ? `<div class="textbox mt small">“${esc(s.quote)}”</div>` : ''}</div>
+    ${lead ? `<div class="person mt" onclick="go('#/mep/${lead.id}')">${avatar(D.meps[String(lead.id)] || lead)}<div><div class="muted small">Lead author</div><b>${esc(lead.name)}</b><div class="muted small">${gname(lead.group)}</div></div></div>` : ''}
+  </div></div>`;
+  spick.onchange = () => go('#/story/' + spick.value);
+}
+
+// ------------------------------------------------------------ MEPs
+function mepsPage() {
+  const rows = Object.values(D.meps).filter(m => m.tabled).sort((a, b) => (b.echoed_orgs || []).length - (a.echoed_orgs || []).length || b.tabled - a.tabled);
+  app.innerHTML = `<h1>Politicians</h1><p class="lead">MEPs who tabled AI Act committee amendments, ordered by how many organisations' wording appears in them.</p>
+  <div class="controls"><input type="search" id="mq" placeholder="Search name, party, country…" style="flex:1 1 280px"></div>
+  <div class="grid g3" id="mgrid"></div>`;
+  const draw = () => { const q = mq.value.toLowerCase();
+    mgrid.innerHTML = rows.filter(m => !q || [m.name, m.party, m.country, gname(m.group)].join(' ').toLowerCase().includes(q)).slice(0, 90).map(m => `<div class="person" onclick="go('#/mep/${m.id}')">${avatar(m)}
+      <div><b>${esc(m.name)}</b>${m.rapporteur ? ' <span class="badge acc">rapporteur</span>' : ''}<div class="muted small">${gname(m.group)} · ${esc(m.party || '')} · ${esc(m.country || '')}</div>
+      <div class="small">${m.tabled} amendments · ${m.law} in law · ${(m.echoed_orgs || []).length} lobbies echoed</div></div></div>`).join(''); };
+  mq.oninput = draw; draw();
+}
+function mepPage(id) {
+  const m = D.meps[id]; if (!m) return notFound();
+  const rate = m.tabled ? m.law / m.tabled : null;
+  app.innerHTML = `<div class="controls"><a href="#/meps">← Politicians</a></div>
+  <div style="display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap">${avatar(m, true)}<div>
+    <span class="badge">${gname(m.group)}</span> ${m.rapporteur ? '<span class="badge acc">AI Act co-rapporteur</span>' : ''}
+    <h1 style="margin-top:8px">${esc(m.name)}</h1>
+    <p class="lead" style="margin:0">${esc(m.party || '')}${m.country ? ' · ' + esc(m.country) : ''}${m.birth_year ? ' · born ' + esc(m.birth_year) : ''}</p>
+    <div class="small mt">${[m.ep_url && `<a href="${esc(m.ep_url)}" target="_blank" rel="noopener">European Parliament profile ↗</a>`, m.homepage && `<a href="${esc(m.homepage)}" target="_blank" rel="noopener">website ↗</a>`, m.x && `<a href="${esc(m.x)}" target="_blank" rel="noopener">X ↗</a>`].filter(Boolean).join(' · ')}</div>
+  </div></div>
+  <div class="grid g4 mt2">${stat(m.tabled, 'AI Act amendments tabled', m.lead + ' as lead author')}${stat(m.survived, 'survived into the EP report', m.tabled ? pct(m.survived / m.tabled, 0) + ' vs ' + pct(BASE.amendment_share_survived, 0) + ' overall' : '')}
+    ${stat(m.law, 'reached the final law', rate == null ? '' : pct(rate, 1) + ' vs ' + pct(BASE.amendment_share_reached_law, 1) + ' overall')}${stat((m.echoed_orgs || []).length, 'lobbies whose wording they used', '')}</div>
+  <div class="grid g2 mt">
+    <div class="card"><h3>Lobby wording in their amendments</h3>${(m.echoed_orgs || []).length ? `<table><tbody>${m.echoed_orgs.map(e => `<tr class="click" onclick="go('#/lobby/${encodeURIComponent(e.org)}')">
+      <td>${tdot(e.type)}${esc(e.name)}<div class="muted small">${tname(e.type)}</div></td><td class="r">${e.amendments} amend.</td><td class="r">${e.law ? `<b>${e.law} in law</b>` : '–'}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">None of their amendments echoes a consultation comment.</div>'}</div>
+    <div class="card"><h3>Recorded meetings with consultation respondents</h3>${(m.meetings || []).length ? `<table><tbody>${m.meetings.slice(0, 30).map(x => `<tr><td class="small muted" style="white-space:nowrap">${esc(x.date)}</td>
+      <td><a href="#/lobby/${encodeURIComponent(x.org)}">${esc(x.name)}</a> ${x.ai ? '<span class="badge acc">AI</span>' : ''}<div class="small">${esc(x.title || '')}${x.role && x.role !== 'Member' ? ' · as ' + esc(x.role) : ''}</div></td></tr>`).join('')}</tbody></table>`
+      : '<div class="empty">No recorded meeting with a consultation respondent (Integrity Watch: 2020 and Jun–Oct 2024 only).</div>'}</div>
+  </div>
+  <div class="grid g2 mt">
+    <div class="card"><h3>Committees (2019–2024)</h3>${(m.committees || []).length ? `<table><tbody>${m.committees.map(c => `<tr><td><b>${esc(c.abbr || '')}</b></td><td>${esc(c.name)}</td><td class="muted">${esc(c.role)}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">–</div>'}</div>
+    <div class="card"><h3>Declared outside activities (2019 declaration)</h3>${(m.outside_activities || []).length ? `<ul style="margin:0;padding-left:18px">${m.outside_activities.map(a => `<li class="small">${esc(a)}</li>`).join('')}</ul>` : '<div class="empty">None listed in the data.</div>'}</div>
+  </div>`;
+}
+
+// ------------------------------------------------------------ pre-bill vs bill
+function influencePage() {
+  const I = D.influence, M = I.metrics;
+  const al = I.alignment.filter(r => r.user_type !== 'ALL'), all = I.alignment.find(r => r.user_type === 'ALL');
+  const coef = I.coef.filter(c => c.outcome === 'reached_law').sort((a, b) => a.odds_ratio_per_sd - b.odds_ratio_per_sd);
+  const ee = M.echo_effect, eeLaw = ee['reached_law (insertions)'];
+  app.innerHTML = `<h1>Pre-bill vs bill</h1>
+  <p class="lead">Two moments to influence a law: <b>before the bill</b>, when the Commission drafts it (2020 inception consultation → 2021 proposal), and
+    <b>on the bill</b>, when Parliament amends it (2021 comments → 2022 committee amendments → 2023 report → 2024 law).</p>
+  <div class="grid g2">
+    <div class="card"><h3>Pre-bill · did the proposal take their side?</h3>
+      <div class="grid g2" style="gap:10px">${stat(pct(all?.aligned_share, 0), 'of 2020 positions adopted', 'random pick would give ' + pct(all?.random_choice_baseline, 0))}
+        ${stat(pct(I.echoed_a.in_law / Math.max(1, I.echoed_a.provisions), 0), 'of proposal text echoing 2020 comments survived to the law', 'vs ' + pct(I.became.in_law / Math.max(1, I.became.provisions), 0) + ' of all proposal text')}</div>
+      <div id="p_align" class="plot" style="height:260px"></div>
+      <p class="muted small">Positions coded by an LLM from each 2020 comment on ${I.issues.length} issues; the proposal's own choice coded from its text by three models (majority).
+      Bands = range expected if positions were shuffled between organisations.</p></div>
+    <div class="card"><h3>Bill · do echoed amendments go further?</h3>
+      <div class="grid g2" style="gap:10px">${stat(pct(ee.survived.echoed, 1), 'of echoed amendments survived', 'vs ' + pct(ee.survived.not_echoed, 1) + ' of the rest')}
+        ${stat(pct(eeLaw.echoed, 1), 'of echoed insertions reached the law', 'vs ' + pct(eeLaw.not_echoed, 1) + ' of the rest')}</div>
+      <div id="p_funnel2" class="plot" style="height:260px"></div></div>
+  </div>
+  <div class="card mt"><h3>Pre-bill issues: what the proposal chose and who agreed</h3><table><thead><tr><th>Issue</th><th>Proposal's choice</th><th class="r">Positions</th><th class="r">Agreed</th><th>What organisations asked for</th></tr></thead><tbody>
+    ${I.issues.sort((a, b) => b.positions - a.positions).map(x => `<tr><td><b>${esc(x.label)}</b></td><td>${esc((x.choice || '').replace(/_/g, ' '))}${x.agreement < 1 ? ' <span class="muted small">(2 of 3 models)</span>' : ''}</td>
+      <td class="r">${x.positions}</td><td class="r">${x.aligned == null ? '–' : pct(x.aligned, 0)}</td>
+      <td class="small">${Object.entries(x.stance_counts || {}).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, v]) => esc(k.replace(/_/g, ' ')) + ' (' + v + ')').join(', ')}</td></tr>`).join('')}</tbody></table></div>
+  <div class="card mt"><h3>What predicts that an amendment reaches the law?</h3>
+    <div class="grid g2"><div id="p_coef" class="plot" style="height:${Math.max(380, coef.length * 19)}px"></div>
+    <div><p>A logistic model trained on all ${num(M.reached_law.n)} amendments that insert wording, using only what is known when the amendment is tabled plus whether it echoes lobby text.
+      Cross-validated AUC <b>${M.reached_law.auc_cv.toFixed(2)}</b> (0.5 = coin flip); base rate ${pct(M.reached_law.base_rate, 1)}.</p>
+      <div class="callout"><b>Reading it:</b> bars right of 1 raise the odds of reaching the law, bars left lower them (per standard deviation of the feature, with 95% bootstrap intervals).
+      Adding a new provision and amending the definitions (Art 3) help; long insertions, the ID group and ENVI amendments rarely make it.
+      Echoing lobby text in itself barely moves the odds — what matters is <i>what</i> is amended and <i>by whom</i>.</div>
+      <p class="muted small mt">This probability is shown for every amendment in the story and lobby pages, with the features that pushed it up or down.</p></div></div></div>
+  <div class="grid g2 mt">
+    <div class="card"><h3>Access: did they meet the MEPs who carried their text?</h3><table><thead><tr><th>Type</th><th class="r">Echoed pairs</th><th class="r">Met</th><th class="r">Random MEPs</th></tr></thead><tbody>
+      ${I.access.map(r => `<tr><td>${r.user_type === 'ALL' ? '<b>All</b>' : tdot(r.user_type) + tname(r.user_type)}</td><td class="r">${r.echoed_pairs}</td><td class="r"><b>${pct(r.carrier_met_share)}</b></td>
+      <td class="r">${pct(r.random_tablers_mean)} <span class="muted small">(${pct(r.random_ci_low, 0)}–${pct(r.random_ci_high, 0)})</span></td></tr>`).join('')}</tbody></table>
+      <p class="muted small">Recorded meetings cover 2020 and Jun–Oct 2024 only, so "not met" means "not recorded".</p></div>
+    <div class="card"><h3>Money: does spending more buy influence?</h3><table><thead><tr><th>Measure</th><th class="r">n</th><th class="r">Spearman ρ</th><th class="r">95% CI</th></tr></thead><tbody>
+      ${I.money.filter(r => r.user_type === 'ALL' && r.sample === 'all matches').map(r => `<tr><td>${esc(r.metric.replace(/_/g, ' '))}</td><td class="r">${r.n}</td><td class="r">${(+r.spearman_rho).toFixed(2)}</td><td class="r">${(+r.ci_low).toFixed(2)} – ${(+r.ci_high).toFixed(2)}</td></tr>`).join('')}</tbody></table>
+      <p class="muted small">Correlation between the influence score and 2026 register figures. Every interval includes 0: no measurable link.</p></div>
+  </div>`;
+  Plotly.newPlot('p_align', [
+    {type: 'bar', x: al.map(r => tname(r.user_type)), y: al.map(r => r.aligned_share), marker: {color: al.map(r => tcol(r.user_type))}, text: al.map(r => pct(r.aligned_share, 0)), textposition: 'outside', cliponaxis: false,
+      error_y: {type: 'data', symmetric: false, array: al.map(r => r.permutation_ci_high == null ? 0 : Math.max(0, r.permutation_ci_high - r.aligned_share)),
+        arrayminus: al.map(r => r.permutation_ci_low == null ? 0 : Math.max(0, r.aligned_share - r.permutation_ci_low)), color: css('--text-3'), thickness: 1.2}},
+  ], PL({showlegend: false, yaxis: {tickformat: '.0%', gridcolor: css('--border'), range: [0, 0.75]}, margin: {l: 45, r: 10, t: 20, b: 60}}), CFG);
+  funnelPlot('p_funnel2');
+  Plotly.newPlot('p_coef', [{type: 'scatter', mode: 'markers', y: coef.map(c => c.label), x: coef.map(c => c.odds_ratio_per_sd),
+    error_x: {type: 'data', symmetric: false, array: coef.map(c => c.ci_high - c.odds_ratio_per_sd), arrayminus: coef.map(c => c.odds_ratio_per_sd - c.ci_low), color: css('--text-3'), thickness: 1.2},
+    marker: {size: 9, color: coef.map(c => c.odds_ratio_per_sd >= 1 ? css('--good') : css('--bad'))}}],
+    PL({showlegend: false, margin: {l: 310, r: 16, t: 10, b: 40}, xaxis: {type: 'log', title: 'odds ratio (log scale)', gridcolor: css('--border')},
+      shapes: [{type: 'line', x0: 1, x1: 1, yref: 'paper', y0: 0, y1: 1, line: {dash: 'dot', color: css('--text-3')}}]}), CFG);
+}
+
+// ------------------------------------------------------------ method
+function methodPage() {
+  const t = D.thresholds, I = D.influence;
+  app.innerHTML = `<h1>Method</h1><p class="lead">Everything on these pages is computed by the pipeline in this repository and stored in a Neo4j graph.</p>
+  <div class="grid g2">
+    <div class="card"><h3>Sources</h3><div class="kv">
+      <div>Comments</div><div>Have Your Say: ${num(D.counts.nodes.Comment)} contributions (2020 inception impact assessment, 2021 proposal)</div>
+      <div>Legal texts</div><div>EUR-Lex via CELLAR: proposal COM(2021)206 and ${esc(ACT.law)} (as adopted + 2026 consolidation)</div>
+      <div>Amendments</div><div>ParlTrack: ${num(D.counts.nodes.Amendment)} committee amendments, ${num(D.counts.nodes.AdoptedAmendment)} report amendments, MEP records</div>
+      <div>Lobby register</div><div>LobbyFacts and Integrity Watch EU (2026 snapshot)</div>
+      <div>Meetings</div><div>Integrity Watch MEP meetings (2020 and Jun–Oct 2024 only)</div></div></div>
+    <div class="card"><h3>Steps</h3><ol class="small" style="margin:0;padding-left:18px;line-height:1.7">
+      <li>Comments cut into ~130-word paragraphs; legal texts parsed into articles, paragraphs and points.</li>
+      <li>Each paragraph compared with proposal provisions (pre-bill) and with the words each amendment inserts (bill): embeddings (${esc(D.models.embed)}), TF-IDF and shared phrases, with proposal quotes and widely shared quotes masked.</li>
+      <li>Threshold = 99th percentile of the same comparisons against an unrelated act (the DSA): ${(+(t.s08?.A?.tau_match || 0)).toFixed(2)} (pre-bill), ${(+(t.s08?.B?.tau_match || 0)).toFixed(2)} (bill).</li>
+      <li>An AI judge (${esc(D.models.judge)}) rates each match: implements, partial, contradicts or unrelated. Tiers: T1 verbatim + implements, T2 verbatim or implements/partial.</li>
+      <li>Amendments followed to the EP report (survival) and the final law (inserted words kept), with null-calibrated thresholds.</li>
+      <li>Reach model: logistic regression for P(survive) and P(reach the law) with cross-validation and bootstrap intervals.</li></ol></div>
+  </div>
+  <div class="card mt"><h3>Caveats</h3><ul class="small" style="margin:0;padding-left:18px;line-height:1.7">
+    <li>Similar wording is not proof of influence: shared outside sources (the HLEG guidelines, the OECD definition, the White Paper) and coalition texts produce echoes too.</li>
+    <li>Register figures (spend, staff, passes, meetings) are today's, not 2021's. Unmatched organisations have no spend, never zero.</li>
+    <li>Meeting records cover 2020 and June–October 2024 only; nothing covers the 2022–2023 amendment period.</li>
+    <li>Only ${num(Object.values(D.lobbies).filter(o => o.match_method !== 'none').length)} of ${num(LOBBIES.length)} organisations could be matched to the register automatically.</li>
+    <li>The AI judge saw ${num((D.thresholds.s08?.B?.echoes) ? 2000 : 0)} of the bill-stage matches (the strongest); the rest stay at tier T3.</li></ul></div>
+  <p class="footer">Built from the hackathonReversa pipeline · ${esc(ACT.id)}</p>`;
+}
+function notFound() { app.innerHTML = '<h1>Not found</h1><p><a href="#/">Back to the overview</a></p>'; }
+
+// ------------------------------------------------------------ router
+function go(h) { location.hash = h; }
+function route() {
+  const [, page = '', arg = ''] = decodeURIComponent(location.hash || '#/').split('/');
+  document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.r === (page === 'lobby' ? 'lobbies' : page === 'mep' ? 'meps' : page)));
+  ({'': overview, lobbies: lobbiesPage, lobby: () => lobbyPage(arg), story: () => storyPage(arg), meps: mepsPage, mep: () => mepPage(arg),
+    influence: influencePage, method: methodPage}[page] || notFound)();
+  window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>

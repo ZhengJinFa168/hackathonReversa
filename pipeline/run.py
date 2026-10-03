@@ -18,8 +18,8 @@ from . import config
 
 STAGES = [
     "s00_check", "s01_feedback", "s02_legal_texts", "s03_amendments", "s04_survival", "s05_features",
-    "s06_orgs", "s06b_meetings", "s07_match", "s08_calibrate", "s09_judge_and_stance", "s10_analyse",
-    "s11_export_dashboard", "s12_eval",
+    "s06_orgs", "s06b_meetings", "s07_match", "s08_calibrate", "s09_judge_and_stance", "s10_analyse", "s10b_reach_model",
+    "s11_export_dashboard", "s11b_demo", "s12_eval",
 ]
 
 
