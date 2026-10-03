@@ -34,3 +34,6 @@ amendments/feedback/
 neo4j/data/
 neo4j/logs/
 neo4j_data/
+
+# Pipeline outputs (parquet caches, embeddings, LLM cache, results)
+data/
