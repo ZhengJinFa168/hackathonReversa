@@ -393,6 +393,6 @@ Automatic, with no hand-labelling required:
 | Memory pressure (16 GB) | Neo4j heap 2 GB (`NEO4J_server_memory_heap_max__size=2G`); embeddings computed once and cached |
 
 ## 6. Definition of done
-- `docker compose up` plus `python -m pipeline.run --track A` and `--track B` rebuild the graph from clean in under 30 minutes, excluding the OpenRouter LLM batch (minutes with concurrency, cached after the first run).
-- `neo4j/queries/` holds the named analyses, and `data/results/` holds the CSVs, `graph.json` and the dashboard HTML.
-- Precision at threshold is reported. The README explains the method, data coverage and caveats on one page.
+- [x] `docker compose up` plus `python -m pipeline.run --track A` and `--track B` rebuild the graph from clean in under 30 minutes, excluding the OpenRouter LLM batch (minutes with concurrency, cached after the first run).
+- [x] `neo4j/queries/` holds the named analyses, and `data/results/` holds the CSVs, `graph.json` and the dashboard HTML.
+- [x] Precision at threshold is reported. The README explains the method, data coverage and caveats on one page.

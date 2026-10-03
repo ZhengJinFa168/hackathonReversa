@@ -622,7 +622,8 @@ function methodPage() {
       <li>Threshold = 99th percentile of the same comparisons against an unrelated act (the DSA): ${(+(t.s08?.A?.tau_match || 0)).toFixed(2)} (pre-bill), ${(+(t.s08?.B?.tau_match || 0)).toFixed(2)} (bill).</li>
       <li>An AI judge (${esc(D.models.judge)}) rates each match: implements, partial, contradicts or unrelated. Tiers: T1 verbatim + implements, T2 verbatim or implements/partial.</li>
       <li>Amendments followed to the EP report (survival) and the final law (inserted words kept), with null-calibrated thresholds.</li>
-      <li>Reach model: logistic regression for P(survive) and P(reach the law) with cross-validation and bootstrap intervals.</li></ol></div>
+      <li>Reach model: logistic regression for P(survive) and P(reach the law) with cross-validation and bootstrap intervals.</li>
+      <li>Evaluation: cross-model agreement κ=${(+(D.eval?.cross_model_kappa_B || 0)).toFixed(2)} (Track B); null false-positive rate ${(+(D.eval?.null_false_positive_rate || 0) * 100).toFixed(1)}%.</li></ol></div>
   </div>
   <div class="card mt"><h3>Caveats</h3><ul class="small" style="margin:0;padding-left:18px;line-height:1.7">
     <li>Similar wording is not proof of influence: shared outside sources (the HLEG guidelines, the OECD definition, the White Paper) and coalition texts produce echoes too.</li>

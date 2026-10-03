@@ -373,9 +373,14 @@ def main(track: str | None = None) -> None:
     for f in ("s04_thresholds.json", "s08_thresholds.json"):
         if (config.DATA / f).exists():
             th[f[:3]] = json.loads((config.DATA / f).read_text())
+            
+    eval_metrics = {}
+    if (config.RESULTS / "eval.csv").exists():
+        eval_metrics = pd.read_csv(config.RESULTS / "eval.csv").to_dict(orient="records")[0]
+
     data = J(dict(acts=ACTS, lobbies=lob, meps=mp, stories=st, featured=featured(st), influence=influence(),
                 articles=arts, art_chunks=art_chunks, art_targets=art_targets, art_dup_cos=DUP_COS,
-                counts=graph.counts(), thresholds=th,
+                counts=graph.counts(), thresholds=th, eval=eval_metrics,
                 models=dict(judge=config.LLM_MODEL, second=config.LLM_MODEL_SECOND, embed=config.EMBED_MODEL)))
     import plotly
 
