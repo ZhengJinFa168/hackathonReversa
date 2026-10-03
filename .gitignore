@@ -1,0 +1,25 @@
+# Attachments
+attachments/
+**/attachments/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Environments / Config
+.env
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
