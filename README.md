@@ -116,10 +116,10 @@ took about 20 minutes and cost roughly $0.25 on the cheap models; answers are ca
 
 ## The demo
 
-After S10/S10b/S11b, open the files in `data/results/` in a browser (they are generated, so not in git):
+A prebuilt copy of the demo is committed at **`demo/demo.html`**: download it and open it in any browser, no setup needed. To rebuild it yourself, run the pipeline (S10/S10b/S11b) and open the generated files in `data/results/` (those are not in git):
 
 ```bash
-open data/results/demo.html          # the multi-page demo
+open demo/demo.html                  # prebuilt demo (or data/results/demo.html after a run)
 open data/results/dashboard.html    # the analysis dashboard
 ```
 
@@ -149,6 +149,7 @@ data_sources/       sources.yaml, register exports, EUR-Lex raw HTML and parsed 
 docs/               ARCHITECTURE.md, IMPLEMENTATION_PLAN.md, neo4j_graph_schema.md
 neo4j/              docker-compose.yml, schema.cypher, queries/ (13 analyses), demo/ (Browser queries)
 pipeline/           stages s00-s12, llm.py (OpenRouter client), graph.py, sources.py, embed.py, serve.py, templates
+demo/               prebuilt demo.html, opens directly in a browser
 data/               generated: caches, features, LLM cache, results (gitignored)
 eval/               optional hand labels for a human precision figure
 ```
