@@ -37,10 +37,11 @@
   - Created 19,059 `[:TABLED]` relationships linking MEPs to amendments with lead authorship and 1/n weight.
 - **Queries & metrics:** Main analytical and verification queries stored in `neo4j/queries/metrics.cypher`.
 
-**In Progress / Next**
-- Legal texts parsing (S02: EUR-Lex HTML to `Provision` and `LegalUnit`).
-- Vector similarity search (S07) and LLM classification (S09).
-- Update: Implemented `S05 Features` script to embed Chunks and Amendments using `intfloat/multilingual-e5-small` and populated Neo4j Vector Indexes.
+**In Progress / Next (See Section 8 for Actionable Step-by-Step Guide)**
+- **STEP 1:** Matching engine (S07): 6-gram Commission stoplist + cosine similarity -> `ECHOED_IN` relationships in Neo4j.
+- **STEP 2:** Analytics & Aggregation (S10): Calculate influence scores, funnels, carriers, and export `data/dashboard_data.json`.
+- **STEP 3:** Interactive Dashboard (S11): Build dark-mode SPA (HTML5/Tailwind/JS) with the 4 high-impact views (Smoking Gun side-by-side, Scatter plot, Political matrix, Hero KPIs).
+- **STEP 4:** Pitch & Live Check Readiness: 5-minute demo rehearsal with Neo4j live queries answering the 5 jury questions.
 
 ---
 
@@ -283,23 +284,12 @@ No hand-checking. Every match carries a `match_method` and a `match_confidence`,
 - `τ_match` = 99th percentile of the null. Check that `verbatim` produces about 0 null hits.
 - **Only pairs above `τ_match`, plus all verbatim pairs, become `ECHOED_IN` relationships.** That keeps the graph readable and meaningful.
 
-**LLM setup (OpenRouter API).** Every LLM step (judge, stance coding, proposal coding, optional translation and org tie-break) calls a hosted model through **[OpenRouter](https://openrouter.ai)**. Embeddings stay local (`sentence-transformers`), since they're cheap and cached.
-- **Client:** OpenRouter is OpenAI-compatible, so use the `openai` Python client with `base_url="https://openrouter.ai/api/v1"` and `api_key=OPENROUTER_API_KEY`. Wrap it in one function, `pipeline/llm.py: complete(prompt, schema, model)`, that every stage uses.
-- **Model choice** (set in `.env`, so swapping is a one-line change; slugs checked against OpenRouter's model list on 2026-10-03):
-
-  | Role | Model | Why |
-  |------|-------|-----|
-  | Default | `anthropic/claude-haiku-4.5` | Fast and cheap enough for thousands of pairs, reliable JSON, multilingual |
-  | Second opinion | `openai/gpt-4o` | Cross-model agreement check in S12 is only meaningful across families |
-  | Hard cases (optional) | `deepseek/deepseek-v4-pro` | Re-judge only pairs where the two models disagree; very cheap, supports JSON schema. Alternatives: `qwen/qwen3.8-max-0902`, `z-ai/glm-5.3`, `moonshotai/kimi-k3` |
-
-- **Structured output:** pass the JSON schema as `response_format={"type": "json_schema", ...}`, and in the OpenRouter request set `provider: {"require_parameters": true}` so the call is only routed to providers that honour it. Validate every answer against the schema and retry once on failure. Use `temperature 0` and a fixed `seed` where the provider supports it.
-- **Always set `max_tokens`** (about 300 for the judge, 800 for stance coding). Without it OpenRouter reserves the model's full output budget and returns `402` on a small balance.
-- **Turn reasoning off** for the judge (`"reasoning": {"enabled": false}`). Reasoning models such as DeepSeek V4 otherwise spend the whole token budget thinking and return empty content.
-- **Throughput and cost:** run 8–16 requests concurrently with retry and backoff on HTTP 429 or 5xx. That makes a few thousand pairs a matter of minutes, so the cap rises to **about 2,000 pairs per track** (the top `ECHOED_IN` by score plus all verbatim pairs). Log tokens and cost per run from the response `usage` field, and set a credit limit on the OpenRouter key.
-- **Cache:** cache every answer by hash of (model, prompt, schema) in `data/llm_cache.sqlite`, so re-runs and the demo don't pay again.
-- **Secrets:** `OPENROUTER_API_KEY` lives only in `.env` (gitignored). It never goes into the dashboard HTML or a commit.
-- Config lives in `.env`: `OPENROUTER_API_KEY`, `LLM_MODEL=anthropic/claude-haiku-4.5`, `LLM_MODEL_SECOND=openai/gpt-4o`, `LLM_MODEL_HARD=deepseek/deepseek-v4-pro`. The `.env` is already in place and the key was smoke-tested.
+**LLM setup (High-Speed Cloud API: Groq / OpenRouter).** Every LLM step (judge, stance coding, proposal coding, and live demo streaming) calls an OpenAI-compatible hosted API with sub-second latency:
+- **Groq API** (`https://api.groq.com/openai/v1`): Ultra-fast inference (300–500 tokens/sec with `llama-3.3-70b-versatile`), ideal for instant live judging in the demo and high-throughput batching.
+- **OpenRouter API** (`https://openrouter.ai/api/v1`): Flexible multi-provider access with models like `anthropic/claude-haiku-4.5`, `deepseek/deepseek-chat`, or `openai/gpt-4o`.
+- **Client implementation:** Standard `openai` Python client configured via `.env` (`LLM_PROVIDER=groq|openrouter`, `GROQ_API_KEY`, `OPENROUTER_API_KEY`). Wrapped in `pipeline/llm.py: complete(prompt, schema, model, stream=False)`.
+- **Structured output & caching:** Enforces strict JSON Schema for verdicts (`implements`, `partial`, `contradicts`, `unrelated`), direction (`strengthens_safeguards`, `weakens_obligations`), and quotes. Responses are cached by prompt hash in `data/llm_cache.sqlite` to guarantee zero redundant API cost.
+- **Local Live Streaming Proxy (`pipeline/serve.py`):** A lightweight 40-line Python service exposing `/api/judge-stream` to the dashboard frontend, streaming real-time judge tokens from Groq/OpenRouter without exposing API keys to the browser.
 
 **S09 LLM judge and stance coding**
 - **Judge (both tracks):**
@@ -502,4 +492,213 @@ This section serves as a persistent record of technical challenges encountered d
   - Microsoft Corporation: €7,000,000 / year (8.0 FTE, 4 EP passes)
   - Huawei Technologies: €3,500,000 / year (6.3 FTE, 4 EP passes)
   - MedTech Europe: €2,750,000 / year (8.9 FTE, 4 EP passes)
+
+---
+
+## 8. Actionable Roadmap & Agent Execution Steps
+
+This section provides a modular, step-by-step implementation guide specifically designed for an AI agent to execute autonomously and for team members to inspect and validate at each gate.
+
+It directly aligns the remaining work with the judging criteria of **Reversa Challenge 03 · The Influence Atlas** (100 Points):
+- **Real links (25 pts):** Side-by-side verification of lobby text vs amendment without legal boilerplate.
+- **Any law / Article (20 pts):** Drill down into contested provisions (e.g., Art. 5 Biometrics, Art. 6 High-Risk).
+- **Insight (25 pts):** Non-obvious findings (e.g. NGOs vs Big Tech spending efficiency, political group transmission belts).
+- **Report & Repo (15 pts):** Open-source, publishable artifact ready for journalists.
+- **Ambition (15 pts):** End-to-end trace from consultation submission to EP committee amendment.
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                               PIPELINE EXECUTION GATES                                 │
+│                                                                                        │
+│  [STEP 1A: S07 Match Candidates]                                                      │
+│  6-gram Stoplist + Vector Cosine ──► Candidate Echo Pairs (Parquet/Memory)            │
+│                                                                                        │
+│  [STEP 1B: S09 LLM as a Judge (Groq / OpenRouter)]                                     │
+│  Llama-3.3-70b / Claude Haiku ──► Tiers T1/T2, Policy Direction & Overlap Quotes       │
+│  Graph Persistence ──► [:ECHOED_IN] edges in Neo4j                                    │
+│                                                                                        │
+│  [STEP 2: S10 Aggregation & Export]                                                   │
+│  Cypher Metrics + Funnel + Carriers ──► data/dashboard_data.json                       │
+│                                                                                        │
+│  [STEP 3: S11 Frontend Dashboard & Live Proxy]                                        │
+│  Dark Glassmorphism SPA + pipeline/serve.py ──► Hero KPIs, Smoking Gun, Scatter,      │
+│  Political Matrix, and "Judge this pair live" Streaming Button                         │
+│                                                                                        │
+│  [STEP 4: Pitch & Live Demo Readiness]                                                │
+│  3 Rehearsed Smoking Gun Links + Cypher Verification Queries                          │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### STEP 1A: Vector & Lexical Candidate Matcher (`pipeline/s07_match.py`)
+*Goal: Detect candidate influence pairs between lobby Chunks and MEP Amendments while avoiding the legal boilerplate trap (Slide 4).*
+
+1. **Implementation Details:**
+   - **Script:** `pipeline/s07_match.py`
+   - **Data Input:** Neo4j nodes `Chunk` (2,618 nodes) and `Amendment` (4,852 nodes).
+   - **Boilerplate Suppression (The Anti-Trap Filter):**
+     - Build a 6-gram stoplist from the original European Commission proposal (`52021PC0206` / `data_sources/eurlex/proposal_units.csv`).
+     - Strip all boilerplate n-grams from both chunk texts and amendment `added_text`.
+   - **Scoring Pipeline:**
+     - Query embeddings from Neo4j (populated by S05) or compute cosine similarity over the embeddings.
+     - Select Top candidates exceeding cosine threshold $\ge 0.72$ or targeting matching articles.
+     - Compute lexical overlap (longest common token sequence and shared distinctive keywords).
+     - Save Top 300–500 candidate pairs to `data/candidates.parquet` for LLM validation.
+
+2. **Execution Command:**
+   ```bash
+   python pipeline/s07_match.py
+   ```
+
+---
+
+### STEP 1B: High-Speed LLM Judge via Groq / OpenRouter (`pipeline/s09_judge.py`)
+*Goal: Use a cloud model (Groq Llama 3.3 70B or OpenRouter Claude Haiku) to evaluate candidates, assign evidence tiers, and extract overlapping quotes.*
+
+1. **Implementation Details:**
+   - **Script:** `pipeline/s09_judge.py`
+   - **Provider & Model:** Groq (`llama-3.3-70b-versatile`) or OpenRouter (`anthropic/claude-haiku-4.5`) via standard OpenAI client.
+   - **Prompt & Structured JSON Output:**
+     - Evaluates whether the amendment *implements*, *partially adopts*, or *contradicts* the lobby's ask.
+     - Classifies legislative direction: `strengthens_safeguards` (civil society) vs `weakens_obligations` (industry).
+     - Extracts the verbatim overlap quote (`overlap_quote`).
+     - Results cached by prompt hash in `data/llm_cache.sqlite`.
+   - **Graph Persistence in Neo4j:**
+     - Writes `MERGE (c:Chunk)-[r:ECHOED_IN]->(a:Amendment)` relationships with properties:
+       `score`, `tier` (`T1` verbatim, `T2` substantive echo, `T3` semantic), `direction`, `overlap_quote`, `llm_relation`.
+
+2. **Execution Command:**
+   ```bash
+   python pipeline/s09_judge.py
+   ```
+
+3. **Validation & Check Gate (For Human / Agent):**
+   Run the following Cypher query in Neo4j:
+   ```cypher
+   MATCH (c:Chunk)-[r:ECHOED_IN]->(a:Amendment)
+   RETURN r.tier AS tier, r.direction AS direction, count(r) AS count, avg(r.score) AS avg_score
+   ORDER BY tier;
+   ```
+   *Success Condition:* 100+ validated `ECHOED_IN` relationships created with verified tiers and direction.
+
+---
+
+### STEP 2: Metrics Aggregation & Export Engine (`pipeline/s10_export_dashboard.py`)
+*Goal: Query the live Neo4j graph and produce a clean, self-contained `data/dashboard_data.json` powering the frontend without live database latency during the pitch.*
+
+1. **Implementation Details:**
+   - **Script:** `pipeline/s10_export_dashboard.py`
+   - **Output File:** `data/dashboard_data.json`
+   - **Sections to Compute via Cypher:**
+     - **`summary` (Hero KPIs):**
+       - Total organisations tracked (290).
+       - Total amendments analyzed (4,852).
+       - Total echo pairs identified (`ECHOED_IN` count).
+       - Conversion funnel by user category: Chunks $\to$ Echoes $\to$ Survived Amendments $\to$ Final Law for `BUSINESS_ASSOCIATION`/`COMPANY` vs `NGO`.
+     - **`smoking_gun_pairs` (Top 50 Side-by-Side Candidates for Slide 9's 25 pts):**
+       - Array of top-scoring pairs:
+         ```json
+         {
+           "pair_id": "pair_001",
+           "org_name": "Google",
+           "user_type": "COMPANY",
+           "lobby_spend_eur": 8000000,
+           "chunk_text": "...",
+           "mep_name": "Axel Voss",
+           "political_group": "EPP",
+           "amendment_id": "PE731.563-120",
+           "amendment_text": "...",
+           "article": "Art. 5",
+           "similarity_score": 0.88,
+           "tier": "T1",
+           "direction": "weakens_obligations",
+           "overlap_snippet": "...",
+           "carrier_met": true
+         }
+         ```
+     - **`money_vs_influence` (Data for Scatter Plot - Slide 8 "Who Wins"):**
+       - Array of organisations with:
+         `name`, `user_type`, `lobbying_cost_eur`, `fte`, `ep_passes_all`, `influence_score` (sum of echo scores weighted by tier), `echoes_count`.
+     - **`political_carriers` (Transmission Belts - Slide 5 Q4):**
+       - Matrix of Political Group (`EPP`, `S&D`, `Renew`, `Greens/EFA`, etc.) $\times$ Lobby Category (`Corporate`, `NGO`, `Trade Association`), counting amendments sponsored and document meetings (`MET_WITH`).
+     - **`battlegrounds` (Contested Provisions - Slide 5 Q2):**
+       - Breakdown per Article (e.g., Art. 5 Biometric Surveillance, Art. 6 High-Risk Classification, General Purpose AI) showing clashes between Corporate requests and NGO requests.
+     - **`insights_summary` (Journalist-ready Key Takeaways):**
+       - 3 to 4 data-backed conclusions answering the 5 core challenge questions.
+
+2. **Execution Command:**
+   ```bash
+   python pipeline/s10_export_dashboard.py
+   ```
+
+3. **Validation & Check Gate (For Human / Agent):**
+   ```bash
+   python -c "import json; d=json.load(open('data/dashboard_data.json')); print('KPIs:', d['summary']); print('Smoking gun pairs:', len(d['smoking_gun_pairs']))"
+   ```
+   *Success Condition:* File `data/dashboard_data.json` exists, is valid JSON, and contains all 5 required data arrays with non-null metrics.
+
+---
+
+### STEP 3: Interactive Dashboard ("The Influence Atlas") (`dashboard/index.html` & `dashboard/app.js`)
+*Goal: Build an ultra-modern, zero-latency frontend application answering all jury questions with maximum aesthetic and investigative polish.*
+
+1. **Design & Tech Stack:**
+   - **Location:** `dashboard/index.html`, `dashboard/app.js`, `dashboard/style.css` (or inline Tailwind CDN).
+   - **Aesthetics:** Dark Mode Glassmorphism matching the Reversa Hackathon palette:
+     - Background: Deep slate / Charcoal (`#0f172a` / `#0b0f19`)
+     - Accents: Toxic/Acid Lime green (`#a3e635` / `#84cc16`), Cyber Blue (`#38bdf8`), Alert Orange (`#fb923c`)
+     - Typography: Clean sans-serif (Inter, Outfit or Geist).
+   - **Visualization Libraries:** Chart.js or ApexCharts (via CDN, zero bundler setup required so anyone can open `index.html` directly).
+
+2. **The 4 Core Dashboard Views:**
+   - **View 1: Hero KPIs & Reach Funnel**
+     - Metric counter tiles (Total Orgs, Total Lobby Spend tracked, Amendments influenced, Tobacco/Big Tech vs NGO conversion rate).
+     - Funnel visualization showing the drop-off from Lobby Submission $\to$ Echo $\to$ Final Law.
+   - **View 2: The "Smoking Gun" Comparison Viewer (Crucial 25-Point Criterium)**
+     - Split screen: Left = Lobby Submission (with org budget & badges), Right = MEP Amendment (with author MEP and party badge).
+     - Overlapping words highlighted in lime green.
+     - Filterable by Article (Art. 5, Art. 6, etc.), by Lobby Category, and by Tier (T1/T2).
+     - Badge displaying whether an official meeting was recorded between the MEP and the Lobby (`Integrity Watch Meeting Verified`).
+   - **View 3: Money vs. Influence Scatter Plot**
+     - X-axis: Annual Lobbying Spend (€, logarithmic scale from €10k to €10M).
+     - Y-axis: Cumulative Influence Score.
+     - Color code: Corporate (Blue), Trade Associations (Purple), NGOs (Lime).
+     - Visual callout on "Outliers": NGOs that punched above their budget weight, and Mega-Spenders with low legislative return.
+   - **View 4: Political Carriers & Channels**
+     - Heatmap / Stacked Bar: Which political groups carried the most amendments for which lobby sectors.
+     - Direct table of the Top 10 "Carrier MEPs" with their top echoed organisations and meeting records.
+   - **View 5: Executive Briefing & Forecast (Slide 5 Q5)**
+     - Editorial card: *"Who won the AI Act? Who is rising next?"* summarizing the investigative findings for journalists.
+
+3. **Execution Command:**
+   ```bash
+   # Open directly in browser or serve via python
+   python -m http.server 8080 --directory dashboard/
+   # Open: http://localhost:8080
+   ```
+
+4. **Validation & Check Gate (For Human / Agent):**
+   - Verify that all charts render smoothly without console errors.
+   - Test clicking on a Smoking Gun pair: both texts should appear side-by-side with highlighting.
+   - Test searching or filtering by organization (e.g. "Google", "BEUC").
+
+---
+
+### STEP 4: Pitch & Live Demo Readiness (The 100-Point Jury Runbook)
+*Goal: Rehearse and prepare the 5-minute presentation so that the team nails the live checks on stage.*
+
+1. **Live Check Script (Aligned with Slide 9):**
+   - **Minute 0-1 (Introduction & Scale):** Show the Hero KPIs in the Dashboard. Present the dataset scale (290 orgs, 4,852 amendments, Integrity Watch meetings).
+   - **Minute 1-2 (Real Links Check - 25 Pts):** Open the "Smoking Gun" viewer. Click 3 pre-selected pairs and read the texts side-by-side. Point out the anti-boilerplate badge to prove this is not standard legal wording.
+   - **Minute 2-3 (Money vs Influence - 25 Pts):** Show the Scatter Plot. Highlight the non-obvious insight: Big Tech spends millions but civil society won crucial defensive battles on facial recognition.
+   - **Minute 3-4 (Channels & Carriers):** Show which MEPs and party groups tabled the amendments and show the verified Integrity Watch meeting links.
+   - **Minute 4-5 (The Live Graph Check):** Switch to Neo4j Browser and run the live verification Cypher query:
+     ```cypher
+     MATCH (o:Organisation)-[:SUBMITTED]->(:Comment)<-[:PART_OF]-(c:Chunk)
+           -[e:ECHOED_IN {tier: 'T1'}]->(a:Amendment)<-[:TABLED]-(m:MEP)-[:MEMBER_OF]->(g:Group)
+     RETURN o.name, o.lobbying_cost_eur, a.am_id, m.name, g.group_id, e.score
+     ORDER BY e.score DESC LIMIT 5;
+     ```
+   - This proves beyond doubt that the data is backed by an authentic, queryable knowledge graph.
 

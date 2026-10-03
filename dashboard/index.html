@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Influence Atlas | Select Legislation</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            900: '#060913',
+                            800: '#0f172a',
+                        },
+                        neon: {
+                            lime: '#a3e635',
+                            cyan: '#0ea5e9',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-900 text-gray-200 font-sans antialiased min-h-screen custom-bg flex flex-col items-center justify-center p-6">
+    
+    <div class="max-w-5xl w-full">
+        <div class="text-center mb-16 animate-fade-in">
+            <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-neon-lime to-neon-cyan flex items-center justify-center font-display font-extrabold text-3xl text-slate-900 shadow-[0_0_30px_rgba(163,230,53,0.4)]">
+                IA
+            </div>
+            <h1 class="font-display font-extrabold text-5xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 tracking-tight mb-4">The Influence Atlas</h1>
+            <p class="text-xl text-slate-400 font-light max-w-2xl mx-auto">Select a legislative dossier to trace the flow of corporate influence from lobbyist requests to final laws.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in" style="animation-delay: 0.2s;">
+            
+            <!-- AI Act (Active) -->
+            <a href="ai-act.html" class="group relative glass-panel p-8 rounded-2xl border border-neon-lime/30 hover:border-neon-lime/80 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_40px_rgba(163,230,53,0.15)] overflow-hidden cursor-pointer flex flex-col h-full">
+                <div class="absolute inset-0 bg-gradient-to-br from-neon-lime/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="flex justify-between items-start mb-6">
+                    <div class="w-12 h-12 rounded-full bg-neon-lime/20 flex items-center justify-center text-2xl border border-neon-lime/30">
+                        🤖
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-neon-lime text-slate-900">
+                        Unlocked
+                    </span>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-2 relative z-10">EU AI Act</h2>
+                <p class="text-slate-400 text-sm flex-grow relative z-10">Analyze 4,800+ amendments and 290 lobby organizations shaping the world's first comprehensive AI law.</p>
+                <div class="mt-6 flex items-center text-neon-lime text-sm font-bold uppercase tracking-wider relative z-10 group-hover:translate-x-2 transition-transform">
+                    Enter Dashboard <span class="ml-2">→</span>
+                </div>
+            </a>
+
+            <!-- Digital Services Act (Locked) -->
+            <div class="glass-panel p-8 rounded-2xl border border-white/5 opacity-60 flex flex-col h-full relative overflow-hidden">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-2xl border border-slate-700 grayscale">
+                        📱
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-slate-800 text-slate-400 flex items-center">
+                        <span class="mr-1">🔒</span> In Progress
+                    </span>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-2">Digital Services Act</h2>
+                <p class="text-slate-400 text-sm flex-grow">Data processing at 64%... Extracting platform liability amendments and Big Tech spending data.</p>
+                <div class="mt-6 w-full bg-slate-800 rounded-full h-1.5">
+                    <div class="bg-slate-500 h-1.5 rounded-full" style="width: 64%"></div>
+                </div>
+            </div>
+
+            <!-- Digital Markets Act (Locked) -->
+            <div class="glass-panel p-8 rounded-2xl border border-white/5 opacity-60 flex flex-col h-full relative overflow-hidden">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-2xl border border-slate-700 grayscale">
+                        🛒
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-slate-800 text-slate-400 flex items-center">
+                        <span class="mr-1">🔒</span> In Progress
+                    </span>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-2">Digital Markets Act</h2>
+                <p class="text-slate-400 text-sm flex-grow">Data processing at 42%... Mapping gatekeeper provisions and antitrust lobbying influence.</p>
+                <div class="mt-6 w-full bg-slate-800 rounded-full h-1.5">
+                    <div class="bg-slate-500 h-1.5 rounded-full" style="width: 42%"></div>
+                </div>
+            </div>
+
+            <!-- Nature Restoration Law (Locked) -->
+            <div class="glass-panel p-8 rounded-2xl border border-white/5 opacity-60 flex flex-col h-full relative overflow-hidden">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-2xl border border-slate-700 grayscale">
+                        🌲
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-slate-800 text-slate-400 flex items-center">
+                        <span class="mr-1">🔒</span> In Progress
+                    </span>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-2">Nature Restoration</h2>
+                <p class="text-slate-400 text-sm flex-grow">Data processing at 89%... Matching agricultural lobby texts with conservative MEP amendments.</p>
+                <div class="mt-6 w-full bg-slate-800 rounded-full h-1.5">
+                    <div class="bg-slate-500 h-1.5 rounded-full" style="width: 89%"></div>
+                </div>
+            </div>
+
+            <!-- Data Act (Locked) -->
+            <div class="glass-panel p-8 rounded-2xl border border-white/5 opacity-60 flex flex-col h-full relative overflow-hidden">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-2xl border border-slate-700 grayscale">
+                        💾
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-slate-800 text-slate-400 flex items-center">
+                        <span class="mr-1">🔒</span> Queued
+                    </span>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-2">EU Data Act</h2>
+                <p class="text-slate-400 text-sm flex-grow">Awaiting processing cluster availability. 1,200+ amendments scheduled for vector matching.</p>
+                <div class="mt-6 w-full bg-slate-800 rounded-full h-1.5">
+                    <div class="bg-slate-500 h-1.5 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <!-- More coming soon -->
+            <div class="glass-panel p-8 rounded-2xl border border-dashed border-slate-700 flex flex-col h-full items-center justify-center text-center">
+                <div class="w-12 h-12 rounded-full bg-slate-800/50 flex items-center justify-center text-slate-500 mb-4">
+                    +
+                </div>
+                <h2 class="text-lg font-bold text-slate-400 mb-2">More Dossiers Coming</h2>
+                <p class="text-slate-500 text-sm">Our AI pipeline is continually scraping and matching new legislative files.</p>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

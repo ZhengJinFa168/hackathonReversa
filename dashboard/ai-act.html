@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Influence Atlas | EU AI Act</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            900: '#060913',
+                            800: '#0f172a',
+                            700: '#1e293b'
+                        },
+                        neon: {
+                            lime: '#a3e635',
+                            cyan: '#0ea5e9',
+                            pink: '#ec4899',
+                            orange: '#f97316'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Chart.js and D3.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-900 text-gray-200 font-sans antialiased min-h-screen custom-bg">
+    
+    <!-- Navbar -->
+    <nav class="border-b border-white/10 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50 shadow-2xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+            <div class="flex items-center space-x-4">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-lime to-neon-cyan flex items-center justify-center font-display font-extrabold text-slate-900 shadow-[0_0_15px_rgba(163,230,53,0.5)]">
+                    IA
+                </div>
+                <div>
+                    <h1 class="font-display font-extrabold text-2xl text-white tracking-tight">Lobbying Influence in the EU AI Act</h1>
+                    <p class="text-xs text-slate-400 font-medium tracking-widest uppercase">Data Analysis Dashboard</p>
+                </div>
+            </div>
+            <div class="hidden md:flex space-x-6 text-sm font-semibold text-slate-400">
+                <a href="#hero-kpis" class="hover:text-white transition-colors">Key Metrics</a>
+                <a href="#smoking-gun-viewer" class="hover:text-white transition-colors">Text Comparison</a>
+                <a href="#bubble-view" class="hover:text-white transition-colors">Budget vs Results</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+        
+
+        <!-- View 1: Hero KPIs -->
+        <section id="hero-kpis" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in" style="animation-delay: 0.1s;">
+            <div class="kpi-card group bg-slate-800/50">
+                <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Organizations Tracked</h3>
+                <div class="text-5xl font-display font-black text-white" id="kpi-orgs">--</div>
+                <p class="text-xs text-slate-500 mt-3 font-medium border-t border-slate-700 pt-2">Companies and NGOs that submitted feedback.</p>
+            </div>
+            <div class="kpi-card group bg-slate-800/50">
+                <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Amendments Analyzed</h3>
+                <div class="text-5xl font-display font-black text-white" id="kpi-amendments">--</div>
+                <p class="text-xs text-slate-500 mt-3 font-medium border-t border-slate-700 pt-2">Proposals by politicians to change the law.</p>
+            </div>
+            <div class="kpi-card group bg-slate-800/50">
+                <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Text Matches Found</h3>
+                <div class="text-5xl font-display font-black text-white" id="kpi-echoes">--</div>
+                <p class="text-xs text-slate-500 mt-3 font-medium border-t border-slate-700 pt-2">Instances where politician text matches lobbyist text.</p>
+            </div>
+            <div class="kpi-card group bg-slate-800/50">
+                <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Identical Copy-Pastes</h3>
+                <div class="text-5xl font-display font-black text-white" id="kpi-smoking">--</div>
+                <p class="text-xs text-slate-500 mt-3 font-medium border-t border-slate-700 pt-2">Confirmed cases of identically copied sentences.</p>
+            </div>
+        </section>
+
+        <!-- View 2: Bubble Graph -->
+        <div class="animate-fade-in" style="animation-delay: 0.2s;">
+            <section id="bubble-view" class="glass-panel p-8 rounded-2xl flex flex-col border border-white/5">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-white mb-2">
+                        Lobbying Budget vs. Text Copied
+                    </h2>
+                    <p class="text-sm text-slate-400">This chart shows which organizations were most successful at getting their texts copied. The size of the bubble represents their total influence score across all amendments.</p>
+                </div>
+                <div class="relative h-[600px] w-full bg-slate-950/50 rounded-xl p-4 border border-slate-800 overflow-hidden" id="bubble-container">
+                    <!-- D3 will inject svg here -->
+                </div>
+            </section>
+        </div>
+
+        <!-- View 3: The Text Comparison Viewer -->
+        <section id="smoking-gun-viewer" class="animate-fade-in" style="animation-delay: 0.2s;">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-display font-bold text-white inline-block">Text Comparison Tool</h2>
+                <p class="text-slate-400 mt-3 max-w-2xl mx-auto text-base">Select a match from the list below to see exactly which words were copied from the lobbyist's document into the politician's amendment.</p>
+            </div>
+
+            <div class="glass-panel rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                <!-- Master List: Top 20 Pairs -->
+                <div class="bg-slate-900 border-b border-white/5" id="pairs-list">
+                    <!-- Cards will be injected here -->
+                    <div class="p-5 text-slate-400 text-center">Loading matches...</div>
+                </div>
+                
+                <!-- Detail View (Side-by-side) -->
+                <div id="pair-detail" class="hidden flex flex-col relative">
+                    
+                    <!-- Prominent Influence Score Banner -->
+                    <div class="bg-slate-800 border-b border-white/10 p-6 flex flex-col items-center justify-center shadow-md">
+                        <span class="text-sm text-slate-400 font-bold uppercase tracking-widest mb-1">Lobbying Power Score</span>
+                        <span class="text-5xl font-black text-white" id="sg-score">--</span>
+                        <p class="text-xs text-slate-500 mt-2 text-center max-w-md">This score blends the text similarity of the match with the lobby's economic power and parliamentary access.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-white/10">
+
+                    <!-- Left: Lobby -->
+                    <div class="p-8 lg:p-10 bg-slate-900/60 flex flex-col">
+                        <div class="flex items-start justify-between mb-8">
+                            <div>
+                                <div class="inline-flex items-center space-x-2 mb-3">
+                                    <span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-slate-700 text-white">Source</span>
+                                    <span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-white/5 text-slate-300 border border-white/10" id="sg-org-type">--</span>
+                                </div>
+                                <h3 class="text-2xl font-bold text-white leading-tight" id="sg-org-name">--</h3>
+                                <div class="mt-2 text-sm font-medium text-neon-orange bg-neon-orange/10 inline-block px-2 py-1 rounded border border-neon-orange/20" id="sg-org-budget">
+                                    Budget: € --
+                                </div>
+                            </div>
+                            <div class="text-4xl opacity-50">💼</div>
+                        </div>
+                        <div class="relative flex-grow">
+                            <div class="absolute -top-3 left-4 px-2 bg-slate-900 text-xs font-bold text-slate-500 uppercase tracking-wider">What the Lobbyist Wrote</div>
+                            <div class="prose prose-invert max-w-none text-base leading-relaxed text-slate-300 bg-slate-950 p-8 rounded-xl border border-slate-800 shadow-inner min-h-[350px]" id="sg-chunk-text">
+                                Select a pair to view.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: MEP -->
+                    <div class="p-8 lg:p-10 bg-slate-900/60 flex flex-col">
+                        <div class="flex items-start justify-between mb-8">
+                            <div>
+                                <div class="inline-flex items-center space-x-2 mb-3">
+                                    <span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30">Destination</span>
+                                    <span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-white/5 text-slate-300 border border-white/10" id="sg-group">--</span>
+                                </div>
+                                <h3 class="text-2xl font-bold text-white leading-tight" id="sg-mep-name">--</h3>
+                                <div class="mt-2 text-sm font-medium text-slate-400 bg-slate-800 inline-block px-2 py-1 rounded border border-slate-700">
+                                    <span id="sg-article" class="text-white">Art. --</span> | <span id="sg-am-id">Am. --</span>
+                                </div>
+                            </div>
+                            <div class="text-4xl opacity-50">🏛️</div>
+                        </div>
+                        <div class="relative flex-grow">
+                            <div class="absolute -top-3 left-4 px-2 bg-slate-900 text-xs font-bold text-slate-500 uppercase tracking-wider">What the Politician Proposed</div>
+                            <div class="prose prose-invert max-w-none text-base leading-relaxed text-slate-300 bg-slate-950 p-8 rounded-xl border border-slate-800 shadow-inner min-h-[350px]" id="sg-amendment-text">
+                                Select a pair to view.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detail View Footer -->
+                <div id="pair-footer" class="hidden bg-slate-900 p-6 flex flex-col sm:flex-row justify-between items-center border-t border-white/10 gap-4">
+                    <div class="flex items-center space-x-6">
+                        <div>
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Match Type</p>
+                            <span class="px-3 py-1 rounded bg-slate-800 text-sm font-bold text-white border border-slate-600" id="sg-tier">EXACT COPY</span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Policy Impact</p>
+                            <span class="px-3 py-1 rounded bg-slate-800 text-sm font-bold text-white border border-slate-600" id="sg-direction">WEAKENS RULES</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 mt-20 bg-slate-900 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-slate-500 text-sm font-medium">
+            <p>Built for the Reversa Hackathon • The Influence Atlas Team</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
