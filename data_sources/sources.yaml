@@ -35,6 +35,20 @@ sources:
     note: "current register figures, not 2021; Meetings = Commission high-level meetings (all-time count)"
     used_by: [S06]
 
+  # Integrity Watch EU (Transparency International EU), committed in 5e24e4d
+  integritywatch_meetings:     # declared MEP-lobby meetings; ';'-separated, UTF-8 BOM, dates dd/mm/yy
+    status: available
+    path: data_sources/integritywatch/mep_meetings.csv
+    key: epid                    # = ParlTrack UserID; `lobbyists` is free-text names only (no register ID)
+    note: "covers Jan-Dec 2020 and Jun-Oct 2024 only (nothing 2021 to mid-2024); dossier column empty"
+    used_by: [S06b]
+  integritywatch_register:     # Transparency Register with meeting counts; superset of LobbyFacts (+406 IDs)
+    status: available
+    path: data_sources/integritywatch/registered_lobby_organizations.csv
+    key: Id                      # joined on Have Your Say trNumber, like LobbyFacts
+    note: "Costs is an exact figure or a range string; MeetingsNumVonderleyen1 = Commission meetings 2019-2024"
+    used_by: [S06]
+
   # EUR-Lex texts, downloaded via the CELLAR API (publications.europa.eu/resource/celex/<CELEX>, Accept: text/html);
   # the eur-lex.europa.eu website itself blocks scripts. Raw HTML is available; S02 parses it into *_units.csv.
   eurlex_final_act_consolidated:   # AI Act consolidated 27.07.2026 (includes amendment M1 = Regulation (EU) 2026/1744; NO recitals)
