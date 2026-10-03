@@ -1,0 +1,56 @@
+# Data source manifest. The pipeline reads this first (S00).
+# status: available   -> load the file(s) at `path`
+# status: placeholder -> header-only CSV with the final schema; loaders return an empty
+#                        DataFrame, log "PLACEHOLDER: <name>", and dependent steps use `fallback`.
+# To plug in real data: put the file at `path` (same columns) and set status: available.
+
+procedure: "2021/0106(COD)"
+
+sources:
+  parltrack_amendments:
+    status: available
+    path: amendments/ep_amendments.json.zst
+    used_by: [S03]
+  parltrack_plenary_amendments:
+    status: available
+    path: amendments/ep_plenary_amendments.json.zst
+    used_by: [S04]
+  parltrack_meps:
+    status: available
+    path: amendments/ep_meps.json.zst
+    used_by: [S03]
+  hys_feedback_13340:          # inception impact assessment (Track A)
+    status: available
+    path: WebScraping/feedback/stage1_inception_13340/parsed_feedback_stage1_13340.json
+    used_by: [S01]
+  hys_feedback_14488:          # feedback on the proposal (Track B)
+    status: available
+    path: WebScraping/feedback/stage2_proposal_14488/parsed_feedback_stage2_14488.json
+    used_by: [S01]
+
+  lobbyfacts:                  # EU Transparency Register via LobbyFacts, snapshot 2026-10-03
+    status: available
+    path: data_sources/lobbyfacts/lobbyfacts_result.csv
+    key: "Identification code"   # joined on Have Your Say trNumber (raw_feedback_*.json); name matching only as automatic fallback
+    note: "current register figures, not 2021; Meetings = Commission high-level meetings (all-time count)"
+    used_by: [S06]
+
+  # EUR-Lex texts, downloaded via the CELLAR API (publications.europa.eu/resource/celex/<CELEX>, Accept: text/html);
+  # the eur-lex.europa.eu website itself blocks scripts. Raw HTML is available; S02 parses it into *_units.csv.
+  eurlex_final_act_consolidated:   # AI Act consolidated 27.07.2026 (includes amendment M1 = Regulation (EU) 2026/1744; NO recitals)
+    status: available
+    url: "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02024R1689-20260727"
+    raw: data_sources/eurlex/raw/02024R1689-20260727.html
+    path: data_sources/eurlex/final_units.csv               # written by S02
+    used_by: [S02, S04]
+  eurlex_final_act_original:       # Regulation (EU) 2024/1689 as published in the OJ (with recitals)
+    status: available
+    url: "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32024R1689"
+    raw: data_sources/eurlex/raw/32024R1689.html
+    used_by: [S02, S04]
+  eurlex_proposal:                 # COM(2021)206 + annexes
+    status: available
+    url: "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:52021PC0206"
+    raw: [data_sources/eurlex/raw/52021PC0206.html, data_sources/eurlex/raw/52021PC0206_annexes.html]
+    path: data_sources/eurlex/proposal_units.csv            # written by S02
+    used_by: [S02, S07-TrackA]

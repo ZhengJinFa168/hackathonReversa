@@ -27,3 +27,14 @@ dist/
 .DS_Store
 .vscode/
 .idea/
+
+# ParlTrack dumps (>100 MB, GitHub limit) and generated outputs
+amendments/*.zst
+amendments/*.json
+amendments/output/
+amendments/feedback/
+.ipynb_checkpoints/
+
+# Neo4j local database files
+neo4j/data/
+neo4j/logs/
