@@ -193,6 +193,110 @@ def lobbies() -> dict:
     return out
 
 
+# ---------------------------------------------------------------- articles: similar comments
+K_STORE = 40          # most similar comments kept per article and track
+DUP_COS = 0.96        # chunk-chunk cosine above which two comments are drawn as near-duplicates
+SNIP = 700
+
+
+def article_label(uid: str) -> str:
+    if uid.startswith("Art"):
+        return "Article " + uid[3:]
+    if uid.startswith("Annex"):
+        return "Annex " + uid[5:]
+    if uid.startswith("Rec"):
+        return "Recital " + uid[3:]
+    return uid
+
+
+ROMAN = dict(I=1, V=5, X=10, L=50)
+
+
+def _unit_order(uid: str) -> tuple:
+    """Articles, then annexes, then recitals, each in numeric order (Annex numbers are roman)."""
+    for k, pre in enumerate(("Art", "Annex", "Rec")):
+        if uid.startswith(pre):
+            s = uid[len(pre):]
+            if pre == "Annex":
+                vals = [ROMAN.get(c, 0) for c in s]
+                n = sum(-v if i + 1 < len(vals) and v < vals[i + 1] else v for i, v in enumerate(vals))
+            else:
+                n = int("".join(c for c in s if c.isdigit()) or 0)
+            return k, n, s
+    return 9, 0, uid
+
+
+def articles() -> tuple[list[dict], dict, dict]:
+    """For every article / recital / annex: the comments whose paragraphs are closest to its text.
+    Track A (2020 comments): cosine to the closest proposal provision under the article.
+    Track B (2021 comments): cosine to the closest committee amendment (inserted words) on the article.
+    Returns (articles, chunks, targets)."""
+    from .units import top
+
+    F = config.FEATURES
+    prov = pd.read_parquet(config.CACHE / "s02_proposal_units.parquet").set_index("unit_id")
+    props = pd.read_parquet(config.CACHE / "s04_amendment_props.parquet").set_index("am_id")
+    meta = pd.DataFrame(graph.run("""
+        MATCH (o:Organisation)-[:SUBMITTED]->(cm:Comment)<-[:PART_OF]-(c:Chunk)
+        RETURN c.chunk_id AS cid, o.org_id AS org, o.name AS org_name, o.user_type AS type, cm.track AS track,
+               cm.url AS url, cm.date AS date""")).set_index("cid")
+    judged = {}
+    for t in "AB":
+        p = config.CACHE / f"s09_judged_{t}.parquet"
+        if p.exists():
+            j = pd.read_parquet(p)
+            for r in j.itertuples():
+                judged[(r.chunk_id, r.target_id)] = (r.llm_relation, r.tier, bool(r.hidden) if r.hidden == r.hidden else False)
+    data = {}
+    for t in "AB":
+        ch = pd.read_parquet(F / f"{t}_chunks.parquet")
+        tg = pd.read_parquet(F / f"{t}_targets.parquet")
+        art = tg["id"].map(lambda u: top(u)) if t == "A" else tg.target_unit_id.map(lambda u: top(u) if isinstance(u, str) else None)
+        data[t] = dict(ch=ch, E=np.load(F / f"{t}_chunks_emb.npy"), tg=tg, G=np.load(F / f"{t}_targets_emb.npy"), art=art.to_numpy())
+    am_all = pd.read_parquet(config.CACHE / "s03_amendments.parquet")
+    am_art = am_all.target_unit_id.map(lambda u: top(u) if isinstance(u, str) else None)
+    ids = sorted({a for d in data.values() for a in d["art"] if isinstance(a, str)}, key=_unit_order)
+    chunks, targets, out = {}, {}, []
+    for X in ids:
+        entry = dict(id=X, kind="recital" if X.startswith("Rec") else "annex" if X.startswith("Annex") else "article",
+                     label=article_label(X), title=(prov.title.get(X) if X in prov.index else None),
+                     text=(prov.full_text.get(X) or "")[:900] if X in prov.index else "", A=[], B=[], dups=[])
+        vecs, cids = [], []
+        for t in "AB":
+            d = data[t]
+            idx = np.flatnonzero(d["art"] == X)
+            if not len(idx):
+                continue
+            S = d["E"] @ d["G"][idx].T
+            best, arg = S.max(1), S.argmax(1)
+            for i in np.argsort(-best)[:K_STORE]:
+                cid, tid = d["ch"].id.iat[i], d["tg"]["id"].iat[idx[arg[i]]]
+                rel = judged.get((cid, tid))
+                entry[t].append([cid, round(float(best[i]), 4), tid, rel[0] if rel and not rel[2] else None, rel[1] if rel and not rel[2] else None])
+                if cid not in chunks and cid in meta.index:
+                    m = meta.loc[cid]
+                    chunks[cid] = dict(org=m.org, name=m.org_name, type=m.type, track=m.track, url=m.url, date=m.date,
+                                       text=d["ch"].text.iat[i][:SNIP])
+                if tid not in targets:
+                    row = d["tg"].iloc[idx[arg[i]]]
+                    targets[tid] = dict(loc=(row.get("location") if t == "B" else tid), text=str(row.text)[:SNIP])
+                vecs.append(d["E"][i])
+                cids.append(cid)
+        if len(cids) > 1:
+            V = np.stack(vecs)
+            C = V @ V.T
+            ii, jj = np.where(np.triu(C, 1) >= DUP_COS)
+            pairs = sorted(((float(C[a, b]), cids[a], cids[b]) for a, b in zip(ii, jj) if cids[a] != cids[b]), reverse=True)[:150]
+            entry["dups"] = [[a, b, round(c, 3)] for c, a, b in pairs]
+        sel = am_art == X
+        entry["n_am"] = int(sel.sum())
+        entry["n_survived"] = int(props.loc[am_all.am_id[sel]].survived.sum()) if sel.any() else 0
+        entry["n_law"] = int(props.loc[am_all.am_id[sel]].reached_law.sum()) if sel.any() else 0
+        entry["n_echo"] = len({(c, tt) for t in "AB" for c, _, tt, rel, tier in entry[t] if tier in ("T1", "T2")})
+        out.append(entry)
+    return out, chunks, targets
+
+
 # ---------------------------------------------------------------- stories
 def stories() -> list[dict]:
     rows = graph.run(f"""
@@ -264,11 +368,13 @@ def main(track: str | None = None) -> None:
     lobby_meps = {c["mep"] for o in lob.values() for c in o["carriers"]} | {m["mep"] for o in lob.values() for m in o["meetings"]}
     mp = meps({int(x) for x in lobby_meps if x is not None})
     st = stories()
+    arts, art_chunks, art_targets = articles()
     th = {}
     for f in ("s04_thresholds.json", "s08_thresholds.json"):
         if (config.DATA / f).exists():
             th[f[:3]] = json.loads((config.DATA / f).read_text())
     data = J(dict(acts=ACTS, lobbies=lob, meps=mp, stories=st, featured=featured(st), influence=influence(),
+                articles=arts, art_chunks=art_chunks, art_targets=art_targets, art_dup_cos=DUP_COS,
                 counts=graph.counts(), thresholds=th,
                 models=dict(judge=config.LLM_MODEL, second=config.LLM_MODEL_SECOND, embed=config.EMBED_MODEL)))
     import plotly
@@ -277,7 +383,7 @@ def main(track: str | None = None) -> None:
     html = TEMPLATE.read_text().replace("__PLOTLYJS__", js).replace(
         "__DATA__", json.dumps(data, ensure_ascii=False, allow_nan=False).replace("</", "<\\/"))
     (R / "demo.html").write_text(html)
-    print(f"   demo.html {len(html) / 1e6:.1f} MB: {len(lob)} lobbies, {len(mp)} MEPs, {len(st)} stories "
+    print(f"   demo.html {len(html) / 1e6:.1f} MB: {len(lob)} lobbies, {len(mp)} MEPs, {len(st)} stories, {len(arts)} articles "
           f"(featured: {st[data['featured']]['org_name']} -> {st[data['featured']]['location']})")
 
 

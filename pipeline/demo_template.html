@@ -138,6 +138,61 @@ del { background: var(--del); color: var(--del-fg); border-radius: 3px; padding:
 .hero { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; align-items: end; margin-bottom: 8px; }
 @media (max-width: 960px) { .hero { grid-template-columns: 1fr; } }
 .footer { color: var(--text-3); font-size: 12.5px; margin-top: 40px; border-top: 1px solid var(--border); padding-top: 14px; }
+/* search */
+.searchbtn { display: flex; align-items: center; gap: 8px; color: var(--text-3); background: var(--surface); min-width: 210px; font-size: 13.5px; padding: 6px 10px; }
+.searchbtn:hover { border-color: var(--accent); color: var(--text-2); }
+kbd { font: 600 11px/1 Inter, system-ui; padding: 3px 6px; border-radius: 5px; border: 1px solid var(--border-2); background: var(--surface-2); color: var(--text-3); }
+.searchbtn kbd { margin-left: auto; }
+.sk { position: fixed; inset: 0; z-index: 50; background: rgba(10,10,10,.38); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: flex-start; padding: 9vh 16px 16px; }
+.sk[hidden] { display: none; }
+.skbox { width: min(680px, 100%); background: var(--surface); border: 1px solid var(--border-2); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,.25); overflow: hidden; }
+.skbox input { width: 100%; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; padding: 16px 18px; font-size: 17px; outline: none; background: var(--surface); color: var(--text); }
+.skr { max-height: 60vh; overflow: auto; padding: 6px; }
+.skg { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; padding: 10px 12px 4px; }
+.ski { display: flex; gap: 10px; align-items: center; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+.ski.on { background: var(--accent-soft); }
+.ski .t { font-weight: 600; } .ski .s { color: var(--text-3); font-size: 12.5px; }
+.ski .k { margin-left: auto; font-size: 11px; color: var(--text-3); }
+.skfoot { border-top: 1px solid var(--border); padding: 8px 14px; font-size: 12px; color: var(--text-3); display: flex; gap: 14px; }
+/* jump bar + pager */
+.toc { position: sticky; top: var(--hh, 56px); z-index: 5; display: flex; gap: 4px; flex-wrap: wrap; align-items: center; margin: 0 -16px 18px; padding: 8px 16px;
+  background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+.toc .lbl { font-size: 11.5px; color: var(--text-3); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; margin-right: 6px; }
+.toc a { font-size: 13px; padding: 4px 10px; border-radius: 999px; color: var(--text-2); cursor: pointer; border: 1px solid transparent; }
+.toc a:hover { text-decoration: none; background: var(--surface); border-color: var(--border); color: var(--text); }
+[id^="sec-"] { scroll-margin-top: calc(var(--hh, 56px) + 60px); }
+.crumbs { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; font-size: 14px; }
+.crumbs .sep { color: var(--text-3); }
+.pager { margin-left: auto; display: flex; gap: 6px; }
+.pager a { font-size: 13px; padding: 5px 11px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); color: var(--text-2); max-width: 260px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pager a:hover { text-decoration: none; border-color: var(--accent); color: var(--text); }
+.pager a.off { opacity: .4; pointer-events: none; }
+/* articles */
+.seg { display: inline-flex; border: 1px solid var(--border-2); border-radius: 9px; overflow: hidden; background: var(--surface); }
+.seg button { border: 0; border-radius: 0; padding: 7px 12px; background: transparent; color: var(--text-2); }
+.seg button + button { border-left: 1px solid var(--border-2); }
+.seg button.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); gap: 10px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; cursor: pointer; position: relative; overflow: hidden; }
+.tile:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.tile .lb { font-weight: 650; } .tile .tt { font-size: 12.5px; color: var(--text-2); min-height: 2.6em; line-height: 1.3; margin: 2px 0 8px; }
+.tile .nums { display: flex; gap: 10px; font-size: 12px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.tile .nums b { color: var(--text); }
+.tile .heat { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.kgroup { margin: 22px 0 10px; display: flex; align-items: baseline; gap: 10px; }
+.kgroup h2 { margin: 0; }
+.slider { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.slider input { width: 160px; accent-color: var(--accent); }
+.slider b { min-width: 2ch; font-variant-numeric: tabular-nums; }
+label.chk { display: inline-flex; gap: 6px; align-items: center; font-size: 13.5px; color: var(--text-2); cursor: pointer; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--text-2); margin-top: 6px; }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.sym { display: inline-block; width: 10px; height: 10px; background: var(--text-3); }
+.sym.c { border-radius: 50%; } .sym.d { transform: rotate(45deg) scale(.85); } .sym.r { border-radius: 50%; background: none; border: 2.5px solid var(--text); }
+tr.sel td { background: var(--accent-soft) !important; }
+.detail-empty { color: var(--text-3); font-size: 14px; }
+.bignum { font-size: 26px; font-weight: 650; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 </style>
 <script>__PLOTLYJS__</script>
 </head>
@@ -146,10 +201,18 @@ del { background: var(--del); color: var(--del-fg); border-radius: 3px; padding:
   <a class="brand" href="#/"><span class="dot"></span>Lobby Echo</a>
   <span class="actchip" id="actchip">AI Act · 2021/0106(COD)</span>
   <nav class="main" id="nav">
-    <a href="#/" data-r="">Overview</a><a href="#/lobbies" data-r="lobbies">Top lobbies</a><a href="#/story" data-r="story">The story</a>
-    <a href="#/influence" data-r="influence">Pre-bill vs bill</a><a href="#/meps" data-r="meps">Politicians</a><a href="#/method" data-r="method">Method</a>
+    <a href="#/" data-r="">Overview</a><a href="#/lobbies" data-r="lobbies">Lobbies</a><a href="#/articles" data-r="articles">Articles</a><a href="#/stories" data-r="stories">Stories</a>
+    <a href="#/meps" data-r="meps">Politicians</a><a href="#/influence" data-r="influence">Pre-bill vs bill</a><a href="#/method" data-r="method">Method</a>
   </nav>
+  <button class="searchbtn" id="searchbtn" onclick="openSearch()" title="Search (/ or ⌘K)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    Search anything<kbd>/</kbd></button>
 </div></header>
+<div class="sk" id="sk" hidden onclick="if (event.target === this) closeSearch()"><div class="skbox">
+  <input id="skq" placeholder="Search lobbies, politicians, articles, stories, pages…" autocomplete="off" spellcheck="false">
+  <div class="skr" id="skr"></div>
+  <div class="skfoot"><span><kbd>↑</kbd> <kbd>↓</kbd> move</span><span><kbd>Enter</kbd> open</span><span><kbd>Esc</kbd> close</span><span style="margin-left:auto">try “Art 5”, “Twilio”, “Benifei”, “Greens”</span></div>
+</div></div>
 <main id="app"></main>
 <script id="data" type="application/json">__DATA__</script>
 <script>
@@ -202,6 +265,26 @@ function diff(a, b) {  // word-level LCS diff -> html with <del>/<ins>
 }
 const trunc = (s, n) => !s ? '' : s.length > n ? s.slice(0, n).replace(/\s+\S*$/, '') + '…' : s;
 
+// ------------------------------------------------------------ navigation helpers
+let PAGER = {};  // current page's prev/next hrefs, used by the ← / → keys
+function crumbs(trail, prev, next) {
+  PAGER = {prev: prev && prev[0], next: next && next[0]};
+  const pg = (p, dir) => p ? `<a href="${p[0]}" title="${esc(p[1])} (${dir === 'prev' ? '←' : '→'})">${dir === 'prev' ? '← ' : ''}${esc(trunc(p[1], 34))}${dir === 'next' ? ' →' : ''}</a>`
+    : `<a class="off">${dir === 'prev' ? '←' : '→'}</a>`;
+  return `<div class="crumbs">${trail.map(([h, l]) => h ? `<a href="${h}">${esc(l)}</a>` : `<span class="muted">${esc(l)}</span>`).join('<span class="sep">/</span>')}
+    ${prev || next ? `<div class="pager">${pg(prev, 'prev')}${pg(next, 'next')}</div>` : ''}</div>`;
+}
+const toc = items => `<div class="toc"><span class="lbl">On this page</span>${items.map(([id, l]) => `<a onclick="jump('${id}')">${esc(l)}</a>`).join('')}
+  <a onclick="window.scrollTo({top:0,behavior:'smooth'})" style="margin-left:auto" title="Back to top">↑ top</a></div>`;
+function jump(id) { const el = document.getElementById('sec-' + id); if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'}); }
+const neighbours = (list, i, href, label) => [i > 0 ? [href(list[i - 1], i - 1), label(list[i - 1])] : null,
+  i >= 0 && i < list.length - 1 ? [href(list[i + 1], i + 1), label(list[i + 1])] : null];
+const RANKED = [...LOBBIES].sort((a, b) => b.influence - a.influence);
+const MEPLIST = Object.values(D.meps).filter(m => m.tabled).sort((a, b) => (b.echoed_orgs || []).length - (a.echoed_orgs || []).length || b.tabled - a.tabled);
+const ARTS = D.articles, ARTIDX = Object.fromEntries(ARTS.map((a, i) => [a.id, i]));
+const artOf = unit => { const m = /^(Art\d+|Rec\d+|Annex[IVXL]+)/.exec(unit || ''); return m && m[1] in ARTIDX ? m[1] : null; };
+const KIND = {article: 'Article', annex: 'Annex', recital: 'Recital'};
+
 // ------------------------------------------------------------ pages
 function overview() {
   const top = [...LOBBIES].sort((a, b) => b.influence - a.influence).slice(0, 5);
@@ -235,7 +318,16 @@ function overview() {
       <div class="mt"><a href="#/story/${D.featured}">Follow this comment into the law →</a></div></div>
   </div>
   <div class="card mt"><h3>Do echoed amendments go further?</h3><div id="p_funnel" class="plot" style="height:330px"></div>
-    <p class="muted small">Share of amendments echoing each type of organisation that survived into the EP report and reached the final law, against all amendments (dotted).</p></div>`;
+    <p class="muted small">Share of amendments echoing each type of organisation that survived into the EP report and reached the final law, against all amendments (dotted).</p></div>
+  <div class="card mt"><div class="section-title" style="margin:0 0 10px"><h3 style="margin:0">Most contested articles</h3><a href="#/articles" class="small">All ${ARTS.length} articles, annexes and recitals →</a></div>
+    <div class="tiles">${[...ARTS].sort((a, b) => b.n_am - a.n_am).slice(0, 8).map(artTile).join('')}</div>
+    <p class="muted small">Click an article to see a graph of the public comments most similar to it.</p></div>
+  <div class="card mt"><h3>Jump to</h3><div class="tiles">${[
+    ['#/lobbies', 'Lobbies', 'Ranking by influence, spend, access'], ['#/articles', 'Articles', 'Similar comments per article'],
+    ['#/stories', 'Stories', `${D.stories.length} comment → law chains`], ['#/meps', 'Politicians', `${MEPLIST.length} MEPs who tabled amendments`],
+    ['#/influence', 'Pre-bill vs bill', 'When lobbying worked, and the reach model'], ['#/method', 'Method', 'Sources, thresholds, caveats']]
+    .map(([h, t, s]) => `<div class="tile" onclick="go('${h}')"><div class="lb">${t} →</div><div class="tt" style="min-height:0">${s}</div></div>`).join('')}</div>
+    <p class="muted small" style="margin-bottom:0">Or press <kbd>/</kbd> anywhere to search lobbies, politicians, articles and stories.</p></div>`;
   funnelPlot('p_funnel');
 }
 const stat = (v, l, s) => `<div class="card stat"><div class="v">${v}</div><div class="l">${l}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
@@ -257,29 +349,39 @@ function funnelPlot(id) {
 }
 
 // ------------------------------------------------------------ top lobbies
-let LSORT = 'influence', LTYPE = '';
+let LSORT = 'influence', LTYPE = '', LQ = '';
 function lobbiesPage() {
-  const rows = LOBBIES.filter(o => (o.n_echoed || o.n_positions) && (!LTYPE || o.type === LTYPE))
-    .sort((a, b) => (b[LSORT] || 0) - (a[LSORT] || 0)).slice(0, 60);
-  const max = Math.max(...rows.map(o => o.influence || 0), 1);
+  PAGER = {};
   app.innerHTML = `<h1>Top lobbies</h1>
   <p class="lead">Ranked by <b>influence score</b>: every judged echo of an organisation's 2021 comment in a committee amendment, weighted by match strength and tier,
     and counted up to three times when the amendment survived into the EP report and again when it reached the law.</p>
-  <div class="controls"><select id="ltype"><option value="">All organisation types</option>${Object.keys(TYPES).map(t => `<option value="${t}" ${t === LTYPE ? 'selected' : ''}>${tname(t)}</option>`).join('')}</select>
+  <div class="controls"><input type="search" id="lq" placeholder="Filter by name or country…" value="${esc(LQ)}" style="flex:1 1 240px">
+    <select id="ltype"><option value="">All organisation types</option>${Object.keys(TYPES).map(t => `<option value="${t}" ${t === LTYPE ? 'selected' : ''}>${tname(t)}</option>`).join('')}</select>
     <select id="lsort">${[['influence', 'Sort by influence score'], ['n_law', 'Sort by amendments in the law'], ['n_echoed', 'Sort by echoed amendments'], ['cost', 'Sort by lobbying spend'], ['aligned_share', 'Sort by pre-bill alignment']]
-      .map(([k, l]) => `<option value="${k}" ${k === LSORT ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      .map(([k, l]) => `<option value="${k}" ${k === LSORT ? 'selected' : ''}>${l}</option>`).join('')}</select><span class="muted small" id="lcount"></span></div>
   <div class="card" style="padding:6px 14px">
     <div class="rank head"><span>#</span><span>Organisation</span><span class="hide-s">Influence</span><span class="num">Echoed</span><span class="num hide-s">Survived</span>
       <span class="num">In law</span><span class="num hide-s">Pre-bill</span><span class="num hide-s">Spend</span></div>
-    ${rows.map((o, i) => `<div class="rank" onclick="go('#/lobby/${encodeURIComponent(o.org_id)}')"><span class="pos">${i + 1}</span>
+    <div id="lrows"></div>
+  </div>
+  <p class="muted small">Pre-bill = share of the organisation's 2020 positions that the Commission's proposal adopted. Spend = latest register figure (2026), not 2021.</p>`;
+  const draw = () => {
+    const q = LQ.toLowerCase();
+    const rows = LOBBIES.filter(o => (o.n_echoed || o.n_positions) && (!LTYPE || o.type === LTYPE)
+      && (!q || [o.name, o.register_name, o.country].join(' ').toLowerCase().includes(q))).sort((a, b) => (b[LSORT] || 0) - (a[LSORT] || 0));
+    const max = Math.max(...rows.map(o => o.influence || 0), 1);
+    lcount.textContent = `${rows.length} organisations`;
+    lrows.innerHTML = rows.map((o, i) => `<div class="rank" onclick="go('#/lobby/${encodeURIComponent(o.org_id)}')"><span class="pos">${i + 1}</span>
       <span>${tdot(o.type)}<b>${esc(o.name)}</b><div class="muted small">${tname(o.type)} · ${esc(o.country || '')}</div></span>
       <span class="hide-s"><div class="barwrap"><div style="width:${100 * (o.influence || 0) / max}%;background:${tcol(o.type)}"></div></div><div class="muted small">${Math.round(o.influence).toLocaleString('en')}</div></span>
       <span class="num">${o.n_echoed}</span><span class="num hide-s">${o.n_survived}</span><span class="num"><b>${o.n_law}</b></span>
-      <span class="num hide-s">${o.aligned_share == null ? '–' : pct(o.aligned_share, 0)}</span><span class="num hide-s">${o.cost == null ? '–' : eur(o.cost)}</span></div>`).join('')}
-  </div>
-  <p class="muted small">Pre-bill = share of the organisation's 2020 positions that the Commission's proposal adopted. Spend = latest register figure (2026), not 2021.</p>`;
-  ltype.onchange = () => { LTYPE = ltype.value; lobbiesPage(); };
-  lsort.onchange = () => { LSORT = lsort.value; lobbiesPage(); };
+      <span class="num hide-s">${o.aligned_share == null ? '–' : pct(o.aligned_share, 0)}</span><span class="num hide-s">${o.cost == null ? '–' : eur(o.cost)}</span></div>`).join('')
+      || '<div class="empty">No organisation matches.</div>';
+  };
+  lq.oninput = () => { LQ = lq.value; draw(); };
+  ltype.onchange = () => { LTYPE = ltype.value; draw(); };
+  lsort.onchange = () => { LSORT = lsort.value; draw(); };
+  draw();
 }
 
 // ------------------------------------------------------------ lobby profile
@@ -289,8 +391,10 @@ function lobbyPage(id) {
   const comm = o.comments || [];
   const best = D.stories.map((s, i) => [s, i]).filter(([s]) => s.org === id);
   const carriers = (o.carriers || []).map(c => [c, D.meps[String(c.mep)] || {name: c.name}]);
+  const ri = RANKED.findIndex(x => x.org_id === id);
   app.innerHTML = `
-  <div class="controls"><a href="#/lobbies">← Top lobbies</a></div>
+  ${crumbs([['#/lobbies', 'Lobbies'], [null, o.name]], ...neighbours(RANKED, ri, x => '#/lobby/' + encodeURIComponent(x.org_id), x => x.name))}
+  ${toc([['money', 'Money & interests'], ['said', 'What they said'], ['went', 'Where their wording went'], ['people', 'Politicians'], ['meet', 'Meetings & partners']])}
   <div class="grid g-side"><div>
     <span class="badge" style="border-color:${tcol(o.type)};color:${tcol(o.type)}">${tname(o.type)}</span>
     <h1 style="margin-top:8px">${esc(o.name)}</h1>
@@ -306,7 +410,7 @@ function lobbyPage(id) {
     ${stat(o.n_law, 'reached the final law', o.expected_law != null ? 'model expected ' + o.expected_law.toFixed(1) : '')}
     ${stat(o.aligned_share == null ? '–' : pct(o.aligned_share, 0), 'pre-bill positions adopted', o.n_positions ? o.n_positions + ' positions coded from the 2020 comment' : 'no 2020 comment')}
   </div>
-  <div class="grid g2 mt">
+  <div class="grid g2 mt" id="sec-money">
     <div class="card"><h3>Money and access</h3><div class="kv">
       <div>Lobbying spend</div><div>${eur(o.cost)}${o.cost_range ? ' <span class="muted">(band midpoint)</span>' : ''}</div>
       <div>Lobbyists (FTE)</div><div>${o.fte ?? '–'}</div>
@@ -321,7 +425,7 @@ function lobbyPage(id) {
       <div>Head office</div><div>${esc(o.head_office || o.country || '–')}</div><div>Size</div><div>${esc(o.size || '–')}</div></div>
       <div class="chips mt">${(o.fields || []).map(f => `<span class="chip">${esc(f)}</span>`).join('') || '<span class="muted small">no fields of interest declared</span>'}</div></div>
   </div>
-  <div class="section-title"><h2>What they said</h2><span class="muted small">${comm.map(c => `<a href="${esc(c.url)}" target="_blank" rel="noopener">${c.track === 'A' ? '2020 inception comment' : '2021 proposal comment'} (${esc(c.date)}) ↗</a>`).join(' · ')}</span></div>
+  <div class="section-title" id="sec-said"><h2>What they said</h2><span class="muted small">${comm.map(c => `<a href="${esc(c.url)}" target="_blank" rel="noopener">${c.track === 'A' ? '2020 inception comment' : '2021 proposal comment'} (${esc(c.date)}) ↗</a>`).join(' · ')}</span></div>
   <div class="grid g2">
     <div class="card"><h3>Their words that came back</h3>${best.slice(0, 3).map(([s, i]) => `<div style="margin-bottom:14px"><div class="textbox quote">“${highlight(trunc(s.chunk, 330), s.added)}”</div>
       <div class="small mt" style="margin-top:6px">→ <a href="#/story/${i}">${esc(s.location)}</a> · ${outcomeBadges(s)}</div></div>`).join('') || '<div class="empty">No judged echo in a committee amendment.</div>'}</div>
@@ -330,7 +434,7 @@ function lobbyPage(id) {
       <td>${p.aligned == null ? '<span class="muted">–</span>' : p.aligned ? '<span class="badge good">adopted</span>' : '<span class="badge bad">not adopted</span>'}</td></tr>`).join('')}</tbody></table>`
       : '<div class="empty">No 2020 comment.</div>'}</div>
   </div>
-  <div class="section-title"><h2>Where their wording went</h2><span class="muted small">${o.n_echoed} committee amendments · click a row for the full story</span></div>
+  <div class="section-title" id="sec-went"><h2>Where their wording went</h2><span class="muted small">${o.n_echoed} committee amendments · click a row for the full story</span></div>
   <div class="card" style="overflow:auto"><table><thead><tr><th>Amendment</th><th>Lead MEP</th><th>Judge</th><th>Outcome</th><th class="r">P(survive)</th><th class="r">P(law)</th></tr></thead><tbody>
     ${(o.echoed || []).map(e => { const si = storyIndex(id, e.am); return `<tr class="${si >= 0 ? 'click' : ''}" ${si >= 0 ? `onclick="go('#/story/${si}')"` : ''}>
       <td><b>${esc(e.location || e.am)}</b><div class="muted small">${esc(e.am)} · ${esc(e.committee)}</div></td>
@@ -339,17 +443,17 @@ function lobbyPage(id) {
       <td>${e.law ? '<span class="badge good">in law</span>' : e.survived ? '<span class="badge">EP report only</span>' : '<span class="badge bad">dropped</span>'}</td>
       <td class="r">${pct(e.p_survived, 0)}</td><td class="r">${pct(e.p_law, 1)}</td></tr>`; }).join('') || '<tr><td colspan="6" class="empty">None.</td></tr>'}
   </tbody></table></div>
-  <div class="section-title"><h2>Politicians who carried it</h2><span class="muted small">MEPs who tabled amendments echoing ${esc(o.name)}</span></div>
+  <div class="section-title" id="sec-people"><h2>Politicians who carried it</h2><span class="muted small">MEPs who tabled amendments echoing ${esc(o.name)}</span></div>
   <div class="grid g3">${carriers.slice(0, 9).map(([c, m]) => `<div class="person" onclick="go('#/mep/${c.mep}')">${avatar(m)}<div><b>${esc(m.name)}</b>
     <div class="muted small">${gname(c.grp)}${m.country ? ' · ' + esc(m.country) : ''}</div><div class="small">${c.amendments} amendment${c.amendments > 1 ? 's' : ''}${c.law ? ` · <b>${c.law} in law</b>` : ''}
     ${(o.meetings || []).some(x => x.mep === c.mep) ? ' · <span class="badge acc">met them</span>' : ''}</div></div></div>`).join('') || '<div class="empty">None.</div>'}</div>
-  <div class="grid g2 mt">
+  <div class="grid g2 mt" id="sec-meet">
     <div class="card"><h3>Recorded meetings with MEPs</h3>${(o.meetings || []).length ? `<table><tbody>${o.meetings.slice(0, 25).map(m => `<tr><td class="small muted" style="white-space:nowrap">${esc(m.date)}</td>
       <td><a href="#/mep/${m.mep}">${esc(m.name)}</a> <span class="muted small">${esc(m.grp)}${m.role && m.role !== 'Member' ? ' · ' + esc(m.role) : ''}</span><div class="small">${esc(m.title || '')} ${m.ai ? '<span class="badge acc">AI</span>' : ''}</div></td></tr>`).join('')}</tbody></table>`
       : '<div class="empty">No recorded meeting (Integrity Watch covers 2020 and Jun–Oct 2024 only).</div>'}</div>
     <div class="card"><h3>Shared text with</h3>${(o.similar || []).length ? o.similar.map(s => `<div class="small" style="margin:4px 0"><a href="#/lobby/${encodeURIComponent(s.other)}">${esc(s.name)}</a> <span class="muted">· ${s.chunks} near-identical paragraphs</span></div>`).join('')
       : '<div class="empty">No near-identical paragraphs with other organisations.</div>'}
-      ${(o.track_a || []).length ? `<h3 class="mt2">2020 wording in the proposal</h3>${o.track_a.slice(0, 6).map(t => `<div class="small" style="margin:4px 0"><b>${esc(t.unit)}</b> · ${esc(t.relation || '')} ${t.in_law ? '<span class="badge good">still in the law</span>' : '<span class="badge bad">changed before the law</span>'}</div>`).join('')}` : ''}</div>
+      ${(o.track_a || []).length ? `<h3 class="mt2">2020 wording in the proposal</h3>${o.track_a.slice(0, 6).map(t => `<div class="small" style="margin:4px 0">${artOf(t.unit) ? `<a href="#/article/${artOf(t.unit)}"><b>${esc(t.unit)}</b></a>` : `<b>${esc(t.unit)}</b>`} · ${esc(t.relation || '')} ${t.in_law ? '<span class="badge good">still in the law</span>' : '<span class="badge bad">changed before the law</span>'}</div>`).join('')}` : ''}</div>
   </div>`;
 }
 
@@ -357,17 +461,19 @@ function lobbyPage(id) {
 function storyPage(n) {
   const i = n == null || n === '' ? D.featured : +n, s = D.stories[i]; if (!s) return notFound();
   const lead = (s.meps || []).find(m => m.lead) || (s.meps || [])[0];
-  const opts = D.stories.map((x, k) => [x, k]).filter(([x]) => x.law).concat(D.stories.map((x, k) => [x, k]).filter(([x]) => !x.law).slice(0, 80));
   const why = (items) => (items || []).map(w => `<li><span class="${w.effect === 'raises' ? 'up' : 'down'}">${w.effect === 'raises' ? '▲' : '▼'}</span> ${esc(w.feature)}</li>`).join('');
   const gauge = (label, p, base, actual) => `<div class="gauge"><div class="row"><span>${label}</span><b>${pct(p, 1)}</b></div>
     <div class="track"><div class="fill" style="width:${Math.min(100, 100 * (p || 0) / Math.max(0.3, (p || 0) * 1.2))}%"></div>
     <div class="base" style="left:${Math.min(100, 100 * base / Math.max(0.3, (p || 0) * 1.2))}%" title="base rate"></div></div>
     <div class="row muted small" style="margin-top:3px"><span>base rate ${pct(base, 1)}</span><span>actual: ${actual ? '<b style="color:var(--good)">yes</b>' : '<b style="color:var(--bad)">no</b>'}</span></div></div>`;
+  const sa = artOf(s.provision);
   app.innerHTML = `
-  <div class="controls"><select id="spick" style="max-width:100%">${opts.map(([x, k]) => `<option value="${k}" ${k === i ? 'selected' : ''}>${x.law ? '✓ ' : ''}${esc(x.org_name)} → ${esc(x.location)}</option>`).join('')}</select>
+  ${crumbs([['#/stories', 'Stories'], [null, `${s.org_name} → ${s.location}`]], ...neighbours(D.stories, i, (x, k) => '#/story/' + k, x => x.org_name + ' → ' + x.location))}
+  <div class="controls"><select id="spick" style="max-width:100%">${D.stories.map((x, k) => `<option value="${k}" ${k === i ? 'selected' : ''}>${x.law ? '✓ ' : ''}${esc(x.org_name)} → ${esc(x.location)}</option>`).join('')}</select>
     <span class="muted small">✓ = reached the law</span></div>
   <h1>${esc(s.org_name)} → ${esc(s.location)}</h1>
-  <p class="lead">How one paragraph of a ${tname(s.type).toLowerCase()}'s 2021 comment shows up in a committee amendment${s.survived ? ', the Parliament\'s report' : ''}${s.law ? ' and the final law' : ''}.</p>
+  <p class="lead">How one paragraph of a ${tname(s.type).toLowerCase()}'s 2021 comment shows up in a committee amendment${s.survived ? ', the Parliament\'s report' : ''}${s.law ? ' and the final law' : ''}.
+    ${sa ? `<br><a href="#/article/${sa}" class="small">See every comment similar to ${esc(ARTS[ARTIDX[sa]].label)} →</a>` : ''}</p>
   <div class="grid g-side"><div class="card"><div class="timeline">
     <div class="step"><span class="knob"></span><div class="when">${esc(s.comment_date)} · Have Your Say</div>
       <div class="title"><a href="#/lobby/${encodeURIComponent(s.org)}">${esc(s.org_name)}</a> comments on the Commission proposal</div>
@@ -420,7 +526,8 @@ function mepsPage() {
 function mepPage(id) {
   const m = D.meps[id]; if (!m) return notFound();
   const rate = m.tabled ? m.law / m.tabled : null;
-  app.innerHTML = `<div class="controls"><a href="#/meps">← Politicians</a></div>
+  const mi = MEPLIST.findIndex(x => String(x.id) === String(id));
+  app.innerHTML = `${crumbs([['#/meps', 'Politicians'], [null, m.name]], ...neighbours(MEPLIST, mi, x => '#/mep/' + x.id, x => x.name))}
   <div style="display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap">${avatar(m, true)}<div>
     <span class="badge">${gname(m.group)}</span> ${m.rapporteur ? '<span class="badge acc">AI Act co-rapporteur</span>' : ''}
     <h1 style="margin-top:8px">${esc(m.name)}</h1>
@@ -451,7 +558,8 @@ function influencePage() {
   app.innerHTML = `<h1>Pre-bill vs bill</h1>
   <p class="lead">Two moments to influence a law: <b>before the bill</b>, when the Commission drafts it (2020 inception consultation → 2021 proposal), and
     <b>on the bill</b>, when Parliament amends it (2021 comments → 2022 committee amendments → 2023 report → 2024 law).</p>
-  <div class="grid g2">
+  ${toc([['both', 'Pre-bill & bill'], ['issues', 'Pre-bill issues'], ['model', 'Reach model'], ['access', 'Access & money']])}
+  <div class="grid g2" id="sec-both">
     <div class="card"><h3>Pre-bill · did the proposal take their side?</h3>
       <div class="grid g2" style="gap:10px">${stat(pct(all?.aligned_share, 0), 'of 2020 positions adopted', 'random pick would give ' + pct(all?.random_choice_baseline, 0))}
         ${stat(pct(I.echoed_a.in_law / Math.max(1, I.echoed_a.provisions), 0), 'of proposal text echoing 2020 comments survived to the law', 'vs ' + pct(I.became.in_law / Math.max(1, I.became.provisions), 0) + ' of all proposal text')}</div>
@@ -463,11 +571,11 @@ function influencePage() {
         ${stat(pct(eeLaw.echoed, 1), 'of echoed insertions reached the law', 'vs ' + pct(eeLaw.not_echoed, 1) + ' of the rest')}</div>
       <div id="p_funnel2" class="plot" style="height:260px"></div></div>
   </div>
-  <div class="card mt"><h3>Pre-bill issues: what the proposal chose and who agreed</h3><table><thead><tr><th>Issue</th><th>Proposal's choice</th><th class="r">Positions</th><th class="r">Agreed</th><th>What organisations asked for</th></tr></thead><tbody>
+  <div class="card mt" id="sec-issues"><h3>Pre-bill issues: what the proposal chose and who agreed</h3><table><thead><tr><th>Issue</th><th>Proposal's choice</th><th class="r">Positions</th><th class="r">Agreed</th><th>What organisations asked for</th></tr></thead><tbody>
     ${I.issues.sort((a, b) => b.positions - a.positions).map(x => `<tr><td><b>${esc(x.label)}</b></td><td>${esc((x.choice || '').replace(/_/g, ' '))}${x.agreement < 1 ? ' <span class="muted small">(2 of 3 models)</span>' : ''}</td>
       <td class="r">${x.positions}</td><td class="r">${x.aligned == null ? '–' : pct(x.aligned, 0)}</td>
       <td class="small">${Object.entries(x.stance_counts || {}).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, v]) => esc(k.replace(/_/g, ' ')) + ' (' + v + ')').join(', ')}</td></tr>`).join('')}</tbody></table></div>
-  <div class="card mt"><h3>What predicts that an amendment reaches the law?</h3>
+  <div class="card mt" id="sec-model"><h3>What predicts that an amendment reaches the law?</h3>
     <div class="grid g2"><div id="p_coef" class="plot" style="height:${Math.max(380, coef.length * 19)}px"></div>
     <div><p>A logistic model trained on all ${num(M.reached_law.n)} amendments that insert wording, using only what is known when the amendment is tabled plus whether it echoes lobby text.
       Cross-validated AUC <b>${M.reached_law.auc_cv.toFixed(2)}</b> (0.5 = coin flip); base rate ${pct(M.reached_law.base_rate, 1)}.</p>
@@ -475,7 +583,7 @@ function influencePage() {
       Adding a new provision and amending the definitions (Art 3) help; long insertions, the ID group and ENVI amendments rarely make it.
       Echoing lobby text in itself barely moves the odds — what matters is <i>what</i> is amended and <i>by whom</i>.</div>
       <p class="muted small mt">This probability is shown for every amendment in the story and lobby pages, with the features that pushed it up or down.</p></div></div></div>
-  <div class="grid g2 mt">
+  <div class="grid g2 mt" id="sec-access">
     <div class="card"><h3>Access: did they meet the MEPs who carried their text?</h3><table><thead><tr><th>Type</th><th class="r">Echoed pairs</th><th class="r">Met</th><th class="r">Random MEPs</th></tr></thead><tbody>
       ${I.access.map(r => `<tr><td>${r.user_type === 'ALL' ? '<b>All</b>' : tdot(r.user_type) + tname(r.user_type)}</td><td class="r">${r.echoed_pairs}</td><td class="r"><b>${pct(r.carrier_met_share)}</b></td>
       <td class="r">${pct(r.random_tablers_mean)} <span class="muted small">(${pct(r.random_ci_low, 0)}–${pct(r.random_ci_high, 0)})</span></td></tr>`).join('')}</tbody></table>
@@ -526,15 +634,309 @@ function methodPage() {
 }
 function notFound() { app.innerHTML = '<h1>Not found</h1><p><a href="#/">Back to the overview</a></p>'; }
 
+// ------------------------------------------------------------ articles index
+const MAXAM = Math.max(...ARTS.map(a => a.n_am), 1);
+const artTitle = a => a.title || trunc((a.text || '').replace(/^\(?\d+\)?\s*/, ''), 80) || '–';
+const artTile = a => `<div class="tile" onclick="go('#/article/${a.id}')" title="${esc(a.label)}">
+  <span class="heat" style="background:color-mix(in srgb, var(--accent) ${Math.round(100 * Math.sqrt(a.n_am / MAXAM))}%, var(--border))"></span>
+  <div class="lb">${esc(a.label)}</div><div class="tt">${esc(trunc(artTitle(a), 72))}</div>
+  <div class="nums"><span><b>${a.n_am}</b> amend.</span><span><b>${a.n_law}</b> in law</span><span><b>${a.n_echo}</b> echo${a.n_echo === 1 ? '' : 'es'}</span></div></div>`;
+let AKIND = '', AQ = '', ASORT = 'doc';
+function articlesPage() {
+  app.innerHTML = `<h1>Articles</h1>
+  <p class="lead">Every article, annex and recital of the Commission's proposal. Open one to see a graph of the public comments whose wording is closest to it,
+    the amendments it drew and how many reached the law.</p>
+  <div class="controls"><input type="search" id="aq" placeholder="Filter: “Article 5”, “biometric”, “sandbox”…" value="${esc(AQ)}" style="flex:1 1 260px">
+    <div class="seg" id="akind">${[['', 'All'], ['article', 'Articles'], ['annex', 'Annexes'], ['recital', 'Recitals']].map(([k, l]) => `<button data-k="${k}" class="${k === AKIND ? 'on' : ''}">${l}</button>`).join('')}</div>
+    <select id="asort">${[['doc', 'Document order'], ['n_am', 'Most amendments'], ['n_law', 'Most amendments in the law'], ['n_echo', 'Most judged echoes'], ['top', 'Closest comment']]
+      .map(([k, l]) => `<option value="${k}" ${k === ASORT ? 'selected' : ''}>${l}</option>`).join('')}</select><span class="muted small" id="acount"></span></div>
+  <div id="agrid"></div>
+  <p class="muted small">Coloured bar = how many committee amendments the provision drew. Echoes = closest comment paragraphs the AI judge rated “implements” or “partial”.</p>`;
+  const topSim = a => Math.max(a.B[0]?.[1] || 0, a.A[0]?.[1] || 0);
+  const draw = () => {
+    const q = AQ.toLowerCase().replace(/\bart(icle)?\.?\s*(\d+)/g, 'article $2');
+    let rows = ARTS.filter(a => (!AKIND || a.kind === AKIND) && (!q || [a.label, a.title, a.text].join(' ').toLowerCase().includes(q)));
+    acount.textContent = `${rows.length} shown`;
+    if (ASORT !== 'doc') {
+      rows = [...rows].sort((a, b) => ASORT === 'top' ? topSim(b) - topSim(a) : b[ASORT] - a[ASORT]);
+      agrid.innerHTML = `<div class="tiles">${rows.map(artTile).join('')}</div>`;
+    } else agrid.innerHTML = ['article', 'annex', 'recital'].map(k => { const g = rows.filter(a => a.kind === k);
+      return g.length ? `<div class="kgroup"><h2>${KIND[k]}s</h2><span class="muted small">${g.length}</span></div><div class="tiles">${g.map(artTile).join('')}</div>` : ''; }).join('');
+    if (!rows.length) agrid.innerHTML = '<div class="empty">Nothing matches.</div>';
+  };
+  aq.oninput = () => { AQ = aq.value; draw(); };
+  akind.querySelectorAll('button').forEach(b => b.onclick = () => { AKIND = b.dataset.k; akind.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); draw(); });
+  asort.onchange = () => { ASORT = asort.value; draw(); };
+  draw();
+}
+
+// ------------------------------------------------------------ article: graph of the top-K similar comments
+let AK = 15, ATRACK = 'both', ADEDUP = true, ADUPS = true, ASEL = null, AITEMS = [], ACUR = null;
+const isEcho = r => r.tier === 'T1' || r.tier === 'T2';
+function artItems(a) {
+  let rows = [];
+  for (const t of ['B', 'A']) if (ATRACK === 'both' || ATRACK === t)
+    for (const [cid, sim, tid, rel, tier] of a[t]) rows.push({cid, sim, tid, rel, tier, t, c: D.art_chunks[cid] || {name: cid}});
+  rows.sort((x, y) => y.sim - x.sim);
+  if (ADEDUP) { const seen = new Set(); rows = rows.filter(r => { const k = r.cid.split(':')[0]; return seen.has(k) ? false : (seen.add(k), true); }); }
+  return rows.slice(0, AK);
+}
+const shortLabel = a => a.label.replace('Article ', 'Art ').replace('Recital ', 'Rec ');
+function articlePage(id) {
+  const i = ARTIDX[id], a = ARTS[i]; if (!a) return notFound();
+  ACUR = a; ASEL = null;
+  const hasA = a.A.length > 0, hasB = a.B.length > 0;
+  if ((ATRACK === 'A' && !hasA) || (ATRACK === 'B' && !hasB)) ATRACK = 'both';
+  const sts = D.stories.map((s, k) => [s, k]).filter(([s]) => artOf(s.provision) === id);
+  app.innerHTML = `${crumbs([['#/articles', 'Articles'], [null, a.label]], ...neighbours(ARTS, i, x => '#/article/' + x.id, x => x.label + (x.title ? ' · ' + x.title : '')))}
+  ${toc([['graph', 'Similar comments'], ['list', 'Ranked list'], ['text', 'Proposal text'], ['stories', `Stories (${sts.length})`]])}
+  <span class="badge">${KIND[a.kind]}</span>
+  <h1 style="margin-top:8px">${esc(a.label)}${a.title ? ' · ' + esc(a.title) : ''}</h1>
+  <p class="lead">The public comments whose paragraphs are closest in meaning to this ${a.kind}: 2021 comments compared with the wording Parliament's committees tried to
+    insert here, 2020 comments with the proposal's own text.</p>
+  <div class="grid g4">${stat(a.n_am, 'committee amendments', 'tabled on this ' + a.kind)}
+    ${stat(a.n_survived, 'survived into the EP report', a.n_am ? pct(a.n_survived / a.n_am, 0) + ' vs ' + pct(BASE.amendment_share_survived, 0) + ' overall' : '')}
+    ${stat(a.n_law, 'reached the final law', a.n_am ? pct(a.n_law / a.n_am, 1) + ' vs ' + pct(BASE.amendment_share_reached_law, 1) + ' overall' : '')}
+    ${stat(a.n_echo, 'judged echoes among the closest', 'AI judge: implements or partial')}</div>
+  <div class="grid g-side mt" id="sec-graph" style="grid-template-columns:minmax(0,1fr) 400px">
+    <div class="card"><h3>Top <span id="aktitle">${AK}</span> most similar comments</h3>
+      <div class="controls">
+        <div class="slider"><span>K</span><input type="range" id="ak" min="3" max="40" value="${AK}"><b id="akv">${AK}</b></div>
+        <div class="seg" id="atrack">${[['both', 'Both'], ['B', '2021 · bill'], ['A', '2020 · pre-bill']].map(([k, l]) =>
+          `<button data-k="${k}" class="${k === ATRACK ? 'on' : ''}" ${(k === 'A' && !hasA) || (k === 'B' && !hasB) ? 'disabled title="no comments"' : ''}>${l}</button>`).join('')}</div>
+      </div>
+      <div class="controls" style="margin-top:-4px"><label class="chk"><input type="checkbox" id="adedup" ${ADEDUP ? 'checked' : ''}>one paragraph per comment</label>
+        <label class="chk"><input type="checkbox" id="adups" ${ADUPS ? 'checked' : ''}>link near-identical paragraphs</label></div>
+      <div id="agraph" style="height:560px"></div>
+      <div class="legend">${Object.keys(TYPES).map(t => `<span><span class="tdot" style="background:${tcol(t)};margin:0"></span>${tname(t)}</span>`).join('')}</div>
+      <div class="legend"><span><span class="sym c"></span>2021 comment</span><span><span class="sym d"></span>2020 comment</span><span><span class="sym r"></span>judged echo</span>
+        <span style="color:var(--accent)">- - - near-identical text</span></div>
+      <p class="muted small">Closer to the centre = more similar (cosine similarity of text embeddings, ${esc(D.models.embed)}). 2021 comments are scored against the words committee amendments
+        insert into this ${a.kind}, 2020 comments against the proposal's text, so the two scales differ a little. Click a dot for the paragraph and the text it resembles.</p>
+    </div>
+    <div class="card" id="adetail" style="align-self:start;position:sticky;top:calc(var(--hh, 56px) + 60px);max-height:calc(100vh - var(--hh, 56px) - 80px);overflow:auto"></div>
+  </div>
+  <div class="card mt" id="sec-list" style="overflow:auto"><h3>Ranked list</h3><table><thead><tr><th>#</th><th>Organisation</th><th>Comment</th><th class="r">Similarity</th><th>Closest text</th><th>AI judge</th></tr></thead>
+    <tbody id="alist"></tbody></table></div>
+  <div class="grid g2 mt">
+    <div class="card" id="sec-text"><h3>Proposal text (Commission, April 2021)</h3>${a.text ? `<div class="textbox" style="white-space:pre-wrap;max-height:420px;overflow:auto">${esc(a.text)}${a.text.length >= 900 ? '…' : ''}</div>` : '<div class="empty">Not available.</div>'}</div>
+    <div class="card" id="sec-stories"><h3>Stories on this ${a.kind}</h3>${sts.length ? sts.slice(0, 14).map(([s, k]) => `<div class="small" style="margin:7px 0">${tdot(s.type)}<a href="#/story/${k}">${esc(s.org_name)} → ${esc(s.location)}</a>
+      ${s.law ? '<span class="badge good">in law</span>' : s.survived ? '<span class="badge">EP report</span>' : '<span class="badge bad">dropped</span>'}</div>`).join('')
+      + (sts.length > 14 ? `<div class="muted small">+${sts.length - 14} more in <a href="#/stories">Stories</a></div>` : '')
+      : `<div class="empty">No judged lobby echo in an amendment to this ${a.kind}.</div>`}</div>
+  </div>`;
+  ak.oninput = () => { AK = +ak.value; ASEL = null; drawArticle(); };
+  atrack.querySelectorAll('button').forEach(b => b.onclick = () => { if (b.disabled) return; ATRACK = b.dataset.k; ASEL = null;
+    atrack.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); drawArticle(); });
+  adedup.onchange = () => { ADEDUP = adedup.checked; ASEL = null; drawArticle(); };
+  adups.onchange = () => { ADUPS = adups.checked; artGraph(); };
+  drawArticle();
+}
+function drawArticle() {
+  AITEMS = artItems(ACUR);
+  akv.textContent = AK; aktitle.textContent = AITEMS.length;
+  const tgt = r => r.t === 'A' ? 'proposal ' + r.tid : (D.art_targets[r.tid]?.loc || '') + ' · ' + r.tid;
+  alist.innerHTML = AITEMS.map((r, k) => `<tr class="click" data-k="${k}" onclick="selectItem(${k})"><td class="muted">${k + 1}</td>
+    <td>${tdot(r.c.type)}<b>${esc(r.c.name)}</b><div class="muted small">${tname(r.c.type)}</div></td>
+    <td class="small">${r.t === 'A' ? '2020 inception' : '2021 proposal'}<div class="muted">${esc(r.c.date || '')}</div></td>
+    <td class="r"><b>${r.sim.toFixed(3)}</b></td><td class="small">${esc(trunc(tgt(r), 70))}</td>
+    <td class="small">${r.rel ? `<span class="badge ${isEcho(r) ? 'good' : ''}">${esc(r.rel)}</span> <span class="muted">${esc(r.tier || '')}</span>` : '<span class="muted">not judged</span>'}</td></tr>`).join('')
+    || '<tr><td colspan="6" class="empty">No comments.</td></tr>';
+  artGraph(); artDetail();
+}
+function artGraph() {
+  const el = document.getElementById('agraph'), items = AITEMS; if (!el) return;
+  if (!items.length) { Plotly.purge(el); el.innerHTML = '<div class="empty">No comments to show.</div>'; return; }
+  const sims = items.map(r => r.sim), mx = Math.max(...sims), mn = Math.min(...sims), span = Math.max(0.04, mx - mn);
+  const rad = s => 0.24 + 0.76 * (mx - s) / span;
+  items.forEach((r, k) => { const ang = -Math.PI / 2 + k * 2.399963, d = rad(r.sim); r.x = d * Math.cos(ang); r.y = d * Math.sin(ang); });
+  const traces = [];
+  [[0, 1 / 3, 2.4], [1 / 3, 2 / 3, 1.5], [2 / 3, 1.01, 0.8]].forEach(([lo, hi, w]) => {
+    const g = items.filter((_, k) => k / items.length >= lo && k / items.length < hi);
+    traces.push({type: 'scatter', mode: 'lines', hoverinfo: 'skip', line: {color: css('--border-2'), width: w},
+      x: g.flatMap(r => [0, r.x, null]), y: g.flatMap(r => [0, r.y, null])});
+  });
+  if (ADUPS) {
+    const byCid = new Map(items.map(r => [r.cid, r])), byCm = new Map(items.map(r => [r.cid.split(':')[0], r]));
+    const find = c => byCid.get(c) || (ADEDUP ? byCm.get(c.split(':')[0]) : null);
+    const seg = (ACUR.dups || []).map(([p, q]) => [find(p), find(q)]).filter(([p, q]) => p && q && p !== q);
+    if (seg.length) traces.push({type: 'scatter', mode: 'lines', hoverinfo: 'skip', line: {color: css('--accent'), width: 1.6, dash: 'dash'},
+      x: seg.flatMap(([p, q]) => [p.x, q.x, null]), y: seg.flatMap(([p, q]) => [p.y, q.y, null])});
+  }
+  const nlab = items.length <= 16 ? items.length : 10;
+  const types = [...new Set(items.map(r => r.c.type))];
+  types.forEach(t => {
+    const g = items.map((r, k) => [r, k]).filter(([r]) => r.c.type === t);
+    traces.push({type: 'scatter', mode: 'markers+text', customdata: g.map(([, k]) => k), x: g.map(([r]) => r.x), y: g.map(([r]) => r.y),
+      text: g.map(([r, k]) => k < nlab ? trunc(r.c.name, 24) : ''), textposition: g.map(([r]) => r.y < 0 ? 'bottom center' : 'top center'),
+      textfont: {size: 10.5, color: css('--text-2')}, cliponaxis: false,
+      hovertext: g.map(([r, k]) => `<b>${esc(r.c.name)}</b><br>#${k + 1} · ${r.t === 'A' ? '2020 comment' : '2021 comment'} · cos ${r.sim.toFixed(3)}${r.rel ? '<br>AI judge: ' + esc(r.rel) : ''}`),
+      hovertemplate: '%{hovertext}<extra></extra>',
+      marker: {color: tcol(t), symbol: g.map(([r]) => r.t === 'A' ? 'diamond' : 'circle'), size: g.map(([r]) => 13 + 13 * (r.sim - mn) / span), opacity: 0.95,
+        line: {color: g.map(([r]) => isEcho(r) ? css('--text') : css('--surface')), width: g.map(([r]) => isEcho(r) ? 2.6 : 1.2)}}});
+  });
+  traces.push({type: 'scatter', mode: 'markers+text', x: [0], y: [0], customdata: [-1], text: [shortLabel(ACUR)], textposition: 'middle center',
+    textfont: {color: '#fff', size: 11}, marker: {size: 46, color: css('--accent'), line: {color: css('--accent-soft'), width: 6}},
+    hovertext: [`<b>${esc(ACUR.label)}</b>${ACUR.title ? '<br>' + esc(ACUR.title) : ''}`], hovertemplate: '%{hovertext}<extra></extra>'});
+  if (ASEL != null && items[ASEL]) traces.push({type: 'scatter', mode: 'markers', hoverinfo: 'skip', x: [items[ASEL].x], y: [items[ASEL].y],
+    marker: {size: 38, symbol: 'circle-open', color: css('--accent'), line: {width: 3}}});
+  const rings = [0, 0.5, 1].map(f => mx - f * span);
+  Plotly.react(el, traces, PL({showlegend: false, hovermode: 'closest', dragmode: false, margin: {l: 6, r: 6, t: 6, b: 6},
+    xaxis: {visible: false, range: [-1.18, 1.18], fixedrange: true}, yaxis: {visible: false, range: [-1.12, 1.12], scaleanchor: 'x', fixedrange: true},
+    shapes: rings.map(s => { const d = rad(s); return {type: 'circle', x0: -d, x1: d, y0: -d, y1: d, line: {color: css('--border'), width: 1, dash: 'dot'}, layer: 'below'}; }),
+    annotations: rings.map(s => ({x: 0, y: rad(s), text: 'cos ' + s.toFixed(2), showarrow: false, yshift: 8, font: {size: 10, color: css('--text-3')}}))}), CFG);
+  if (el.removeAllListeners) el.removeAllListeners('plotly_click');
+  el.on('plotly_click', ev => { const p = (ev.points || []).find(p => p.customdata != null); if (p) selectItem(p.customdata < 0 ? null : p.customdata); });
+}
+function selectItem(k) {
+  ASEL = k;
+  document.querySelectorAll('#alist tr').forEach(tr => tr.classList.toggle('sel', tr.dataset.k != null && +tr.dataset.k === k));
+  artGraph(); artDetail();
+  if (window.innerWidth < 960 && k != null) document.getElementById('adetail').scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+function artDetail() {
+  const el = document.getElementById('adetail'), a = ACUR, items = AITEMS, r = ASEL == null ? null : items[ASEL]; if (!el) return;
+  if (!r) {
+    const byType = {}; items.forEach(x => byType[x.c.type] = (byType[x.c.type] || 0) + 1);
+    el.innerHTML = `<h3>Who writes like ${esc(a.label)}?</h3>
+      <p class="detail-empty" style="margin-top:0">Click a comment in the graph or the list to read its paragraph next to the text it resembles.</p>
+      ${Object.entries(byType).sort((p, q) => q[1] - p[1]).map(([t, n]) => `<div style="margin:8px 0"><div class="row small" style="display:flex;justify-content:space-between"><span>${tdot(t)}${tname(t)}</span><b>${n}</b></div>
+        <div class="barwrap"><div style="width:${100 * n / Math.max(1, items.length)}%;background:${tcol(t)}"></div></div></div>`).join('')}
+      <h3 class="mt">Closest</h3>${items.slice(0, 6).map((x, k) => `<div class="small" style="margin:5px 0;cursor:pointer" onclick="selectItem(${k})">${tdot(x.c.type)}<a>${esc(x.c.name)}</a>
+        <span class="muted">· ${x.sim.toFixed(3)}${isEcho(x) ? ' · echo' : ''}</span></div>`).join('')}`;
+    return;
+  }
+  const tg = D.art_targets[r.tid] || {}, lob = D.lobbies[r.c.org], si = r.t === 'B' ? storyIndex(r.c.org, r.tid) : -1;
+  const dupsOf = (a.dups || []).filter(d => d[0] === r.cid || d[1] === r.cid).map(d => D.art_chunks[d[0] === r.cid ? d[1] : d[0]]).filter(Boolean);
+  const name = lob ? `<a href="#/lobby/${encodeURIComponent(r.c.org)}">${esc(r.c.name)}</a>` : esc(r.c.name);
+  el.innerHTML = `<div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+      <span class="badge" style="border-color:${tcol(r.c.type)};color:${tcol(r.c.type)}">${tname(r.c.type)}</span>
+      <span class="small"><a onclick="selectItem(${ASEL > 0 ? ASEL - 1 : 0})" style="cursor:pointer">‹</a> <span class="muted">#${ASEL + 1} of ${items.length}</span>
+      <a onclick="selectItem(${Math.min(items.length - 1, ASEL + 1)})" style="cursor:pointer">›</a> · <a onclick="selectItem(null)" style="cursor:pointer">close</a></span></div>
+    <h2 style="margin:8px 0 2px">${name}</h2>
+    <div class="muted small">${r.t === 'A' ? '2020 inception comment' : '2021 comment on the proposal'} · ${esc(r.c.date || '')}${r.c.url ? ` · <a href="${esc(r.c.url)}" target="_blank" rel="noopener">full comment ↗</a>` : ''}</div>
+    <div class="grid g2 mt" style="gap:10px"><div><div class="bignum">${r.sim.toFixed(3)}</div><div class="muted small">cosine similarity</div></div>
+      <div><div style="font-weight:650;font-size:16px;margin-top:6px;${isEcho(r) ? 'color:var(--good)' : ''}">${r.rel ? esc(r.rel) : 'not judged'}</div>
+      <div class="muted small">AI judge${r.tier ? ' · tier ' + esc(r.tier) : ' (below the review cut)'}</div></div></div>
+    <h3 class="mt">Their paragraph</h3><div class="textbox quote" style="font-size:15px">“${highlight(r.c.text, tg.text)}${(r.c.text || '').length >= 700 ? '…' : ''}”</div>
+    <h3 class="mt">${r.t === 'A' ? 'Closest proposal text · ' + esc(r.tid) : 'Closest amendment · ' + esc(r.tid)}</h3>
+    ${r.t === 'B' && tg.loc ? `<div class="muted small" style="margin:-4px 0 6px">${esc(tg.loc)}</div>` : ''}
+    <div class="textbox" style="font-size:14px">${highlight(tg.text, r.c.text)}${(tg.text || '').length >= 700 ? '…' : ''}</div>
+    <div class="small" style="margin-top:6px"><mark>highlighted</mark> = words both texts use</div>
+    ${dupsOf.length ? `<h3 class="mt">Near-identical paragraph also sent by</h3>${dupsOf.map(c => `<div class="small" style="margin:3px 0">${tdot(c.type)}${D.lobbies[c.org] ? `<a href="#/lobby/${encodeURIComponent(c.org)}">${esc(c.name)}</a>` : esc(c.name)}</div>`).join('')}` : ''}
+    ${si >= 0 ? `<div class="mt"><a href="#/story/${si}"><b>Follow this amendment into the law →</b></a></div>` : ''}
+    ${lob ? `<div class="small" style="margin-top:8px"><a href="#/lobby/${encodeURIComponent(r.c.org)}">${esc(r.c.name)}: full profile →</a></div>` : ''}`;
+}
+
+// ------------------------------------------------------------ stories index
+let SOUT = '', SQ = '', STYPE = '';
+function storiesPage() {
+  const f = D.stories[D.featured], nLaw = D.stories.filter(s => s.law).length;
+  app.innerHTML = `<h1>Stories</h1>
+  <p class="lead">Every pairing of a lobby paragraph and a committee amendment that the AI judge confirmed, followed to the Parliament's report and the final law.
+    <b>${nLaw}</b> of ${D.stories.length} reached the law.</p>
+  <div class="card" style="margin-bottom:18px;cursor:pointer" onclick="go('#/story/${D.featured}')"><h3>Featured</h3>
+    <div class="serif" style="font-size:22px;font-weight:600">${esc(f.org_name)} → ${esc(f.location)}</div>
+    <div class="textbox quote mt" style="margin-top:8px">“${esc(trunc(f.chunk, 240))}”</div><div class="chips mt">${outcomeBadges(f)}</div></div>
+  <div class="controls"><input type="search" id="sq" placeholder="Filter by organisation, article or amendment…" value="${esc(SQ)}" style="flex:1 1 260px">
+    <div class="seg" id="sout">${[['', 'All'], ['law', 'Reached the law'], ['report', 'EP report only'], ['dropped', 'Dropped']].map(([k, l]) => `<button data-k="${k}" class="${k === SOUT ? 'on' : ''}">${l}</button>`).join('')}</div>
+    <select id="stype"><option value="">All types</option>${Object.keys(TYPES).map(t => `<option value="${t}" ${t === STYPE ? 'selected' : ''}>${tname(t)}</option>`).join('')}</select>
+    <span class="muted small" id="scount"></span></div>
+  <div class="card" style="overflow:auto"><table><thead><tr><th>Organisation</th><th>Amendment</th><th>AI judge</th><th>Outcome</th><th class="r">P(law)</th></tr></thead><tbody id="srows"></tbody></table></div>`;
+  const draw = () => {
+    const q = SQ.toLowerCase().replace(/\bart(icle)?\.?\s*(\d+)/g, 'article $2');
+    const rows = D.stories.map((s, k) => [s, k]).filter(([s]) => (!STYPE || s.type === STYPE)
+      && (!SOUT || (SOUT === 'law' ? s.law : SOUT === 'report' ? s.survived && !s.law : !s.survived))
+      && (!q || [s.org_name, s.location, s.am, s.committee].join(' ').toLowerCase().includes(q)));
+    scount.textContent = `${rows.length} stories`;
+    srows.innerHTML = rows.map(([s, k]) => `<tr class="click" onclick="go('#/story/${k}')"><td>${tdot(s.type)}<b>${esc(s.org_name)}</b><div class="muted small">${tname(s.type)}</div></td>
+      <td>${esc(s.location)}<div class="muted small">${esc(s.am)} · ${esc(s.committee || '')}</div></td>
+      <td class="small">${esc(s.relation || '')}<div class="muted">${esc(s.tier || '')}${s.verbatim ? ' · verbatim' : ''}</div></td>
+      <td>${s.law ? '<span class="badge good">in law</span>' : s.survived ? '<span class="badge">EP report only</span>' : '<span class="badge bad">dropped</span>'}</td>
+      <td class="r">${pct(s.p_law, 1)}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">Nothing matches.</td></tr>';
+  };
+  sq.oninput = () => { SQ = sq.value; draw(); };
+  stype.onchange = () => { STYPE = stype.value; draw(); };
+  sout.querySelectorAll('button').forEach(b => b.onclick = () => { SOUT = b.dataset.k; sout.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); draw(); });
+  draw();
+}
+
+// ------------------------------------------------------------ global search (/ or Cmd/Ctrl+K)
+let IDX = null, SKRES = [], SKSEL = 0;
+const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+function buildIndex() {
+  const pages = [['Overview', '#/', 'Headline numbers and the featured story'], ['Lobbies', '#/lobbies', 'Ranking of organisations'], ['Articles', '#/articles', 'Similar comments per article'],
+    ['Stories', '#/stories', 'Comment → amendment → law'], ['Politicians', '#/meps', 'MEPs who tabled amendments'], ['Pre-bill vs bill', '#/influence', 'When lobbying worked; reach model'],
+    ['Method', '#/method', 'Sources, thresholds, caveats']];
+  IDX = [
+    ...pages.map(([t, h, s]) => ({k: 'Page', t, s, h, q: norm(t + ' ' + s), w: 3})),
+    ...LOBBIES.map(o => ({k: 'Lobby', t: o.name, s: [tname(o.type), o.country, o.n_echoed ? o.n_echoed + ' echoed' : '', o.n_law ? o.n_law + ' in law' : ''].filter(Boolean).join(' · '),
+      h: '#/lobby/' + encodeURIComponent(o.org_id), q: norm([o.name, o.register_name, tname(o.type), o.country].join(' ')), w: Math.log1p(o.influence || 0), type: o.type})),
+    ...Object.values(D.meps).map(m => ({k: 'Politician', t: m.name, s: [gname(m.group), m.party, m.country, m.tabled ? m.tabled + ' amendments' : ''].filter(Boolean).join(' · '),
+      h: '#/mep/' + m.id, q: norm([m.name, m.party, m.country, gname(m.group), m.group].join(' ')), w: Math.log1p(m.tabled || 0)})),
+    ...ARTS.map(a => ({k: KIND[a.kind], t: a.label + (a.title ? ' · ' + a.title : ''), s: `${a.n_am} amendments · ${a.n_law} in law · ${a.n_echo} echoes`,
+      h: '#/article/' + a.id, q: norm([a.label, a.title, a.id].join(' ')), l: norm(a.label), w: Math.log1p(a.n_am)})),
+    ...D.stories.map((s, k) => ({k: 'Story', t: s.org_name + ' → ' + s.location, s: (s.law ? 'reached the law' : s.survived ? 'EP report only' : 'dropped') + ' · ' + s.am,
+      h: '#/story/' + k, q: norm([s.org_name, s.location, s.am].join(' ')), w: s.law ? 1 : 0, type: s.type})),
+  ];
+}
+function searchRun(raw) {
+  if (!IDX) buildIndex();
+  const q = norm(raw.trim()).replace(/\bart(icle)?\.?\s*(\d+)/g, 'article $2').replace(/\brec(ital)?\.?\s*(\d+)/g, 'recital $2');
+  if (!q) return [...IDX.filter(x => x.k === 'Page'), ...IDX.filter(x => x.k === 'Lobby').sort((a, b) => b.w - a.w).slice(0, 5), IDX.find(x => x.h === '#/story/' + D.featured)].filter(Boolean);
+  const tk = q.split(/\s+/);
+  return IDX.map(x => {
+    if (!tk.every(t => x.q.includes(t))) return null;
+    const tl = norm(x.t); let s = x.w;
+    if (x.l === q || tl === q) s += 1e6; else if (tl.startsWith(q)) s += 1e5; else if (tk.every(t => new RegExp('(^|\\W)' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).test(x.q))) s += 1e4;
+    return [s, x];
+  }).filter(Boolean).sort((a, b) => b[0] - a[0]).slice(0, 60).map(r => r[1]);
+}
+const SKORDER = ['Page', 'Lobby', 'Politician', 'Article', 'Annex', 'Recital', 'Story'];
+function searchDraw() {
+  const q = document.getElementById('skq').value, res = searchRun(q);
+  const groups = SKORDER.map(k => [k, res.filter(x => x.k === k).slice(0, k === 'Story' ? 6 : 8)]).filter(([, g]) => g.length);
+  SKRES = groups.flatMap(([, g]) => g); SKSEL = Math.min(SKSEL, Math.max(0, SKRES.length - 1));
+  let n = 0;
+  document.getElementById('skr').innerHTML = groups.map(([k, g]) => `<div class="skg">${k === 'Page' ? 'Pages' : k === 'Story' ? 'Stories' : k + 's'}</div>${g.map(x => { const i = n++;
+    return `<div class="ski${i === SKSEL ? ' on' : ''}" data-i="${i}" onmousemove="skHover(${i})" onclick="skOpen(${i})">
+      ${x.type ? tdot(x.type) : '<span class="tdot" style="background:var(--border-2)"></span>'}<div style="min-width:0"><div class="t">${esc(x.t)}</div><div class="s">${esc(x.s)}</div></div><span class="k">${esc(x.k)}</span></div>`; }).join('')}`).join('')
+    || `<div class="empty" style="padding:14px">No match for “${esc(q)}”.</div>`;
+}
+function skHover(i) { if (i === SKSEL) return; SKSEL = i; document.querySelectorAll('#skr .ski').forEach(e => e.classList.toggle('on', +e.dataset.i === i)); }
+function skOpen(i) { const x = SKRES[i]; if (!x) return; closeSearch(); if (location.hash === x.h) route(); else go(x.h); }
+function openSearch() { const s = document.getElementById('sk'), q = document.getElementById('skq'); s.hidden = false; q.value = ''; SKSEL = 0; searchDraw(); setTimeout(() => q.focus(), 0); }
+function closeSearch() { document.getElementById('sk').hidden = true; }
+document.getElementById('skq').addEventListener('input', () => { SKSEL = 0; searchDraw(); });
+document.getElementById('skq').addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); SKSEL = Math.max(0, Math.min(SKRES.length - 1, SKSEL + (e.key === 'ArrowDown' ? 1 : -1)));
+    document.querySelectorAll('#skr .ski').forEach(el => el.classList.toggle('on', +el.dataset.i === SKSEL));
+    document.querySelector(`#skr .ski[data-i="${SKSEL}"]`)?.scrollIntoView({block: 'nearest'}); }
+  else if (e.key === 'Enter') { e.preventDefault(); skOpen(SKSEL); }
+  else if (e.key === 'Escape') closeSearch();
+});
+document.addEventListener('keydown', e => {
+  const t = e.target, typing = /^(input|textarea|select)$/i.test(t.tagName || '') || t.isContentEditable, open = !document.getElementById('sk').hidden;
+  if ((e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !typing)) { e.preventDefault(); open ? closeSearch() : openSearch(); return; }
+  if (e.key === 'Escape' && open) { closeSearch(); return; }
+  if (typing || open || e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+  if (e.key === 'ArrowLeft' && PAGER.prev) go(PAGER.prev);
+  else if (e.key === 'ArrowRight' && PAGER.next) go(PAGER.next);
+});
+
 // ------------------------------------------------------------ router
 function go(h) { location.hash = h; }
 function route() {
+  PAGER = {};
   const [, page = '', arg = ''] = decodeURIComponent(location.hash || '#/').split('/');
-  document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.r === (page === 'lobby' ? 'lobbies' : page === 'mep' ? 'meps' : page)));
-  ({'': overview, lobbies: lobbiesPage, lobby: () => lobbyPage(arg), story: () => storyPage(arg), meps: mepsPage, mep: () => mepPage(arg),
-    influence: influencePage, method: methodPage}[page] || notFound)();
+  const navKey = {lobby: 'lobbies', mep: 'meps', story: 'stories', article: 'articles'}[page] ?? page;
+  document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.r === navKey));
+  ({'': overview, lobbies: lobbiesPage, lobby: () => lobbyPage(arg), story: () => storyPage(arg), stories: storiesPage, meps: mepsPage, mep: () => mepPage(arg),
+    articles: articlesPage, article: () => articlePage(arg), influence: influencePage, method: methodPage}[page] || notFound)();
   window.scrollTo(0, 0);
 }
+const setHH = () => document.documentElement.style.setProperty('--hh', document.querySelector('header.top').offsetHeight + 'px');
+window.addEventListener('resize', setHH); setHH();
 window.addEventListener('hashchange', route);
 route();
 </script>
