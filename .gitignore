@@ -1,10 +1,5 @@
-# Attachments & Document Binaries
+# Attachments (ignora ricorsivamente qualsiasi cartella attachments nel repo)
 attachments/
-**/attachments/
-attachments*/
-**/attachments*/
-*.pdf
-*.docx
 
 # Python
 __pycache__/
@@ -38,3 +33,4 @@ amendments/feedback/
 # Neo4j local database files
 neo4j/data/
 neo4j/logs/
+neo4j_data/
