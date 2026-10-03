@@ -23,3 +23,9 @@ CREATE INDEX echo_run IF NOT EXISTS FOR ()-[r:ECHOED_IN]-() ON (r.run_id);
 // Optional: similar chunks inside Neo4j for the demo (multilingual-e5-base = 768 dims). S05 fills Chunk.embedding.
 CREATE VECTOR INDEX chunk_embedding IF NOT EXISTS FOR (c:Chunk) ON (c.embedding)
 OPTIONS {indexConfig: {`vector.dimensions`: 768, `vector.similarity_function`: 'cosine'}};
+
+// Target vectors (S05), so chunk -> amendment / provision similarity can be explored in Neo4j directly.
+CREATE VECTOR INDEX amendment_embedding IF NOT EXISTS FOR (a:Amendment) ON (a.embedding)
+OPTIONS {indexConfig: {`vector.dimensions`: 768, `vector.similarity_function`: 'cosine'}};
+CREATE VECTOR INDEX provision_embedding IF NOT EXISTS FOR (p:Provision) ON (p.embedding)
+OPTIONS {indexConfig: {`vector.dimensions`: 768, `vector.similarity_function`: 'cosine'}};
