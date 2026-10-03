@@ -173,6 +173,18 @@ def complete(
     raise LLMError(f"invalid answer from {model}: {last_err}")
 
 
+def stream(prompt: str, schema: dict, model: str | None = None, system: str = "", max_tokens: int = config.JUDGE_MAX_TOKENS,
+           tag: str = "stream"):
+    """Yield the answer text as it arrives (for the live demo). Same routing parameters as complete()."""
+    model = model or config.LLM_MODEL
+    messages = ([{"role": "system", "content": system}] if system else []) + [{"role": "user", "content": prompt}]
+    for ev in _call(model, messages, schema, max_tokens, config.LLM_SEED, stream=True):
+        if getattr(ev, "usage", None):
+            _log_cost(model, ev.usage, tag)
+        if ev.choices and ev.choices[0].delta and ev.choices[0].delta.content:
+            yield ev.choices[0].delta.content
+
+
 def batch(items: Iterable[Any], fn: Callable[[Any], dict], concurrency: int = config.LLM_CONCURRENCY) -> list:
     """Run fn over items concurrently. Failures come back as {'error': str} so one bad pair doesn't sink a batch."""
 

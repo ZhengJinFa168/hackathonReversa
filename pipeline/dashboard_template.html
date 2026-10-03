@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Act Lobby Echoes</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f5f2; --surface: #fcfcfb; --border: #e3e2de;
+  --text: #0b0b0b; --text-2: #52514e; --text-3: #7a7974;
+  --accent: #2a78d6; --grid: #e8e7e3; --hl: rgba(237,161,0,.35);
+  --c0: #2a78d6; --c1: #eb6834; --c2: #1baf7a; --c3: #eda100; --c4: #e87ba4; --c5: #8a8984;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121211; --surface: #1a1a19; --border: #2e2e2c;
+    --text: #ffffff; --text-2: #c3c2b7; --text-3: #8f8e86;
+    --accent: #3987e5; --grid: #2c2c2a; --hl: rgba(201,133,0,.45);
+    --c0: #3987e5; --c1: #d95926; --c2: #199e70; --c3: #c98500; --c4: #d55181; --c5: #6b6a66;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121211; --surface: #1a1a19; --border: #2e2e2c;
+  --text: #ffffff; --text-2: #c3c2b7; --text-3: #8f8e86;
+  --accent: #3987e5; --grid: #2c2c2a; --hl: rgba(201,133,0,.45);
+  --c0: #3987e5; --c1: #d95926; --c2: #199e70; --c3: #c98500; --c4: #d55181; --c5: #6b6a66;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.5 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 24px; margin: 0 0 4px; letter-spacing: -0.01em; }
+h2 { font-size: 16px; margin: 2px 0 6px; }
+.sub { color: var(--text-2); margin: 0 0 18px; max-width: 900px; }
+nav { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; }
+nav a { color: var(--accent); text-decoration: none; font-size: 13px; padding: 3px 9px; border: 1px solid var(--border);
+  border-radius: 999px; background: var(--surface); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.tile, .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+.tile { padding: 12px 14px; }
+.tile .v { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.tile .l { color: var(--text-2); font-size: 12.5px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; } }
+.card { padding: 14px 16px; margin-bottom: 16px; min-width: 0; }
+.note { color: var(--text-3); font-size: 12.5px; margin: 6px 2px 0; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 10px; align-items: center; }
+.controls input, .controls select, button { font: inherit; padding: 6px 10px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+button { cursor: pointer; background: var(--surface); }
+button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.controls input[type=search] { flex: 1 1 240px; }
+label.chk { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; color: var(--text-2); }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 7px 6px; border-bottom: 1px solid var(--border); vertical-align: top; font-size: 13px; }
+th { font-size: 11.5px; color: var(--text-2); font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+td.num { white-space: nowrap; font-variant-numeric: tabular-nums; }
+tr.row { cursor: pointer; }
+tr.row:hover td, tr.sel td { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.scroll { overflow: auto; max-height: 420px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 760px) { .pair { grid-template-columns: 1fr; } }
+.pair h4 { margin: 0 0 4px; font-size: 12px; color: var(--text-2); text-transform: uppercase; letter-spacing: .03em; }
+.txt { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; white-space: pre-wrap; }
+mark { background: var(--hl); color: inherit; border-radius: 2px; }
+.badge { display: inline-block; font-size: 11.5px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); margin-right: 4px; }
+.verdict { margin-top: 10px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); }
+.verdict code, pre { font: 12.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; }
+pre { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; overflow: auto; white-space: pre-wrap; }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 3px 14px; font-size: 13px; }
+.kv div:nth-child(odd) { color: var(--text-2); }
+a { color: var(--accent); }
+.muted { color: var(--text-3); }
+</style>
+<script>__PLOTLYJS__</script>
+</head>
+<body>
+<div class="wrap">
+  <h1>Do lobby comments show up in the AI Act?</h1>
+  <p class="sub">Stakeholder comments on the AI Act (Have Your Say 2020 and 2021) matched against the Commission proposal (Track A)
+  and the European Parliament committee amendments (Track B), followed through the EP report to Regulation (EU) 2024/1689.
+  An <b>echo</b> is a text match above a null-calibrated threshold, judged by an LLM; it is evidence of similar wording, not proof of cause.</p>
+  <nav>
+    <a href="#funnel">Funnel</a><a href="#network">Network</a><a href="#sankey">Flows</a><a href="#pairs">Pair viewer</a>
+    <a href="#orgs">Organisations</a><a href="#carriers">Carriers</a><a href="#money">Money</a><a href="#battle">Battlegrounds</a>
+    <a href="#tracka">Track A</a><a href="#access">Access</a><a href="#ask">Ask the graph</a><a href="#method">Method</a>
+  </nav>
+  <div class="tiles" id="tiles"></div>
+
+  <div class="card" id="funnel">
+    <h2>Reach funnel (Track B)</h2>
+    <div class="controls"><label class="chk"><input type="radio" name="fm" value="amendment" checked> per echoed amendment</label>
+      <label class="chk"><input type="radio" name="fm" value="echo"> per echo</label></div>
+    <div id="f_funnel"></div>
+    <p class="note">Share of echoed amendments that survived into the EP report (June 2023) and reached the final law, by the type of
+    organisation whose comment they echo, against the base rate of all 4,852 committee amendments. Judged echoes only (tiers T1/T2).
+    Per-echo counting gives more weight to amendments echoed by many paragraphs.</p>
+  </div>
+
+  <div class="card" id="network">
+    <h2>Organisations and the articles their wording echoes in</h2>
+    <div class="controls">
+      <select id="n_track"><option value="">Both tracks</option><option value="B">Track B (amendments)</option><option value="A">Track A (proposal)</option></select>
+      <select id="n_type"><option value="">All organisation types</option></select>
+      <select id="n_tier"><option value="">T1 + T2</option><option value="T1">T1 only (verbatim and implements)</option></select>
+      <label class="chk"><input type="checkbox" id="n_law"> reached the law only</label>
+    </div>
+    <div id="f_network" style="height:620px"></div>
+    <p class="note">Circles = organisations (colour = type), squares = articles of the proposal. Line width = number of echoes.</p>
+  </div>
+
+  <div class="card" id="sankey">
+    <h2>Who → which article → what happened (top 20 organisations by influence, Track B)</h2>
+    <div id="f_sankey" style="height:640px"></div>
+    <p class="note">Flow width = distinct echoed amendments.</p>
+  </div>
+
+  <div class="card" id="pairs">
+    <h2>Pair viewer</h2>
+    <div class="controls">
+      <input type="search" id="p_q" placeholder="Search organisation, article, text…">
+      <select id="p_track"><option value="">Both tracks</option><option value="B">Track B</option><option value="A">Track A</option></select>
+      <select id="p_tier"><option value="">T1 + T2</option><option value="T1">T1</option><option value="T2">T2</option></select>
+      <select id="p_type"><option value="">All types</option></select>
+      <label class="chk"><input type="checkbox" id="p_law"> reached the law</label>
+      <label class="chk"><input type="checkbox" id="p_verb"> verbatim</label>
+      <span class="muted" id="p_count"></span>
+    </div>
+    <div class="grid2">
+      <div class="scroll"><table><thead><tr><th>Organisation</th><th>Target</th><th>Tier</th><th>Verdict</th><th>Score</th></tr></thead>
+        <tbody id="p_list"></tbody></table></div>
+      <div id="p_detail" class="muted">Pick a pair.</div>
+    </div>
+  </div>
+
+  <div class="card" id="orgs">
+    <h2>Organisation profile</h2>
+    <div class="controls"><input type="search" id="o_q" list="o_list" placeholder="Type an organisation…"><datalist id="o_list"></datalist></div>
+    <div id="o_card" class="muted">Pick an organisation.</div>
+  </div>
+
+  <div class="grid2" id="carriers">
+    <div class="card"><h2>Carriers: MEPs tabling amendments that echo an organisation</h2>
+      <div class="scroll"><table><thead><tr><th>Organisation</th><th>MEP</th><th>Group</th><th>Amend.</th><th>In law</th><th>Meetings</th></tr></thead><tbody id="c_tb"></tbody></table></div>
+      <p class="note">Meetings = recorded Integrity Watch meetings between the two (2020 and Jun–Oct 2024 only).</p></div>
+    <div class="card"><h2>Brokers (betweenness)</h2>
+      <table><thead><tr><th>MEP</th><th>Group</th><th>Betweenness</th></tr></thead><tbody id="b_tb"></tbody></table>
+      <p class="note">MEPs that sit between organisations (through amendments they tabled) and the adopted text.</p></div>
+  </div>
+
+  <div class="card" id="money">
+    <h2>Money vs influence</h2>
+    <div class="grid2"><div id="f_money" style="height:420px"></div>
+      <div><table><thead><tr><th>Metric</th><th>n</th><th>Spearman ρ</th><th>95% CI</th></tr></thead><tbody id="m_tb"></tbody></table>
+      <p class="note">2026 register figures (LobbyFacts / Integrity Watch), not 2021. All organisation types; the register-number-only sensitivity check is in money_vs_influence.csv.</p></div></div>
+  </div>
+
+  <div class="card" id="battle">
+    <h2>Battlegrounds</h2>
+    <table><thead><tr><th>Provision</th><th>Echoes</th><th>Asking for stricter rules</th><th>Asking for looser rules</th></tr></thead><tbody id="bg_tb"></tbody></table>
+    <p class="note">Provisions whose amendments echo different organisation types in opposite directions (LLM-judged direction).</p>
+  </div>
+
+  <div class="card" id="tracka">
+    <h2>Track A: did the proposal take the positions organisations argued for in 2020?</h2>
+    <div class="grid2"><div id="f_heat" style="height:440px"></div>
+      <div><table><thead><tr><th>Type</th><th>Positions</th><th>Aligned</th><th>Random choice</th><th>Permutation 95%</th></tr></thead><tbody id="a_tb"></tbody></table>
+      <p class="note">Share of coded positions that match the proposal's choice on each issue. Random choice = picking one of the issue's options at random;
+      permutation = stances shuffled across organisations within each issue.</p></div></div>
+  </div>
+
+  <div class="card" id="access">
+    <h2>Access vs echo</h2>
+    <table><thead><tr><th>Type</th><th>Echoed pairs</th><th>With a recorded meeting</th><th>Random tabling MEPs</th><th>95% interval</th></tr></thead><tbody id="ac_tb"></tbody></table>
+    <p class="note">Share of (organisation, echoed amendment) pairs where an MEP who tabled the amendment has a recorded meeting with the organisation,
+    against the same organisations paired with random AI Act tabling MEPs. Meetings recorded in 2020 and Jun–Oct 2024 only: a missing meeting means "not recorded".</p>
+  </div>
+
+  <div class="card" id="ask">
+    <h2>Ask the graph</h2>
+    <div class="controls"><input type="search" id="ask_q" placeholder="e.g. Which MEPs met Google and tabled amendments echoing it?">
+      <button class="primary" id="ask_go">Ask (live)</button></div>
+    <div class="controls" id="ask_prepared"></div>
+    <div id="ask_out" class="muted">Live answers need <code>python -m pipeline.serve</code> running; prepared questions work offline.</div>
+  </div>
+
+  <div class="card" id="method">
+    <h2>Method and data coverage</h2>
+    <div id="cov"></div>
+  </div>
+</div>
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const PROXY = 'http://localhost:8765';
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const TYPES = ['NGO','COMPANY','BUSINESS_ASSOCIATION','TRADE_UNION','CONSUMER_ORGANISATION'];
+const tcol = t => css('--c' + Math.max(0, TYPES.indexOf(t) >= 0 ? TYPES.indexOf(t) : 5));
+const esc = s => (s == null ? '' : String(s)).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pct = x => x == null || isNaN(x) ? '–' : (100 * x).toFixed(1) + '%';
+const fmt = x => x == null || x === '' ? '–' : (typeof x === 'number' ? x.toLocaleString() : x);
+function layout(extra) {
+  return Object.assign({paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', font: {color: css('--text'), size: 12},
+    margin: {l: 50, r: 10, t: 10, b: 40}, xaxis: {gridcolor: css('--grid')}, yaxis: {gridcolor: css('--grid')}, showlegend: true,
+    legend: {orientation: 'h', y: -0.15}}, extra || {});
+}
+const CFG = {displaylogo: false, responsive: true};
+TYPES.forEach(t => { for (const id of ['n_type','p_type']) document.getElementById(id).insertAdjacentHTML('beforeend', `<option>${t}</option>`); });
+
+// tiles
+document.getElementById('tiles').innerHTML = D.tiles.map(t => `<div class="tile"><div class="v">${esc(t.v)}</div><div class="l">${esc(t.l)}</div></div>`).join('');
+
+// funnel
+function drawFunnel(mode) {
+  const rows = D.funnel.filter(r => !String(r.user_type).startsWith('ALL'));
+  const base = D.funnel.find(r => String(r.user_type).startsWith('ALL'));
+  const s = mode === 'echo' ? 'echo_share_survived' : 'amendment_share_survived', l = mode === 'echo' ? 'echo_share_reached_law' : 'amendment_share_reached_law';
+  const x = rows.map(r => r.user_type);
+  Plotly.react('f_funnel', [
+    {type: 'bar', name: 'survived into EP report', x, y: rows.map(r => r[s]), marker: {color: css('--c0')}, text: rows.map(r => pct(r[s])), textposition: 'outside'},
+    {type: 'bar', name: 'reached the law', x, y: rows.map(r => r[l]), marker: {color: css('--c2')}, text: rows.map(r => pct(r[l])), textposition: 'outside'},
+  ], layout({barmode: 'group', height: 360, yaxis: {tickformat: '.0%', gridcolor: css('--grid')},
+    shapes: [base.amendment_share_survived, base.amendment_share_reached_law].map((y, i) => ({type: 'line', xref: 'paper', x0: 0, x1: 1, y0: y, y1: y,
+      line: {dash: 'dot', color: i ? css('--c2') : css('--c0'), width: 1.5}})),
+    annotations: [{xref: 'paper', x: 1, y: base.amendment_share_survived, text: 'base rate ' + pct(base.amendment_share_survived), showarrow: false, yshift: 9, xanchor: 'right', font: {size: 11}},
+                  {xref: 'paper', x: 1, y: base.amendment_share_reached_law, text: 'base rate ' + pct(base.amendment_share_reached_law), showarrow: false, yshift: 9, xanchor: 'right', font: {size: 11}}]}), CFG);
+}
+document.querySelectorAll('input[name=fm]').forEach(r => r.onchange = () => drawFunnel(r.value));
+drawFunnel('amendment');
+
+// network
+function drawNetwork() {
+  const tr = n_track.value, ty = n_type.value, ti = n_tier.value, law = n_law.checked;
+  const N = Object.fromEntries(D.network.nodes.map(n => [n.id, n]));
+  const E = D.network.edges.filter(e => (!tr || e.track === tr) && (!ti || e.tier === ti) && (!law || e.law) && (!ty || N[e.source].user_type === ty));
+  const used = new Set(E.flatMap(e => [e.source, e.target]));
+  const deg = {}; E.forEach(e => { deg[e.source] = (deg[e.source] || 0) + e.n; deg[e.target] = (deg[e.target] || 0) + e.n; });
+  const ex = [], ey = [];
+  E.forEach(e => { ex.push(N[e.source].x, N[e.target].x, null); ey.push(N[e.source].y, N[e.target].y, null); });
+  const traces = [{type: 'scattergl', mode: 'lines', x: ex, y: ey, line: {width: 0.7, color: css('--text-3')}, opacity: 0.35, hoverinfo: 'skip', showlegend: false}];
+  TYPES.forEach(t => {
+    const ns = D.network.nodes.filter(n => n.kind === 'org' && n.user_type === t && used.has(n.id));
+    if (ns.length) traces.push({type: 'scatter', mode: 'markers', name: t, x: ns.map(n => n.x), y: ns.map(n => n.y),
+      marker: {size: ns.map(n => 6 + 2.2 * Math.sqrt(deg[n.id])), color: tcol(t), line: {width: 0.5, color: css('--surface')}},
+      text: ns.map(n => `${n.name}<br>${deg[n.id]} echoes`), hoverinfo: 'text'});
+  });
+  const as = D.network.nodes.filter(n => n.kind === 'article' && used.has(n.id));
+  const top = new Set(as.slice().sort((a, b) => deg[b.id] - deg[a.id]).slice(0, 25).map(n => n.id));  // label the 25 busiest
+  traces.push({type: 'scatter', mode: 'markers+text', name: 'article', x: as.map(n => n.x), y: as.map(n => n.y), text: as.map(n => top.has(n.id) ? n.name : ''),
+    textposition: 'top center', textfont: {size: 10, color: css('--text-2')},
+    marker: {symbol: 'square', size: as.map(n => 7 + 1.6 * Math.sqrt(deg[n.id])), color: css('--text-3')},
+    hovertext: as.map(n => `${n.name}<br>${deg[n.id]} echoes`), hoverinfo: 'text'});
+  Plotly.react('f_network', traces, layout({height: 620, xaxis: {visible: false}, yaxis: {visible: false}, margin: {l: 5, r: 5, t: 5, b: 5}}), CFG);
+}
+['n_track','n_type','n_tier','n_law'].forEach(id => document.getElementById(id).onchange = drawNetwork);
+drawNetwork();
+
+// sankey
+(function () {
+  const S = D.sankey, kc = {user_type: '--c1', org: '--c0', article: '--c5', outcome: '--c2'};
+  Plotly.newPlot('f_sankey', [{type: 'sankey', arrangement: 'snap', node: {label: S.labels, pad: 8, thickness: 12,
+    color: S.kinds.map((k, i) => S.kinds[i] === 'user_type' ? tcol(S.labels[i]) : css(kc[k]))},
+    link: {source: S.source, target: S.target, value: S.value, color: 'rgba(128,128,128,0.25)'}}],
+    layout({height: 640, margin: {l: 5, r: 5, t: 5, b: 5}}), CFG);
+})();
+
+// pair viewer
+const STOP = new Set('the and for that with this from shall which such are have has not but their they into been also other where when should would could than then its any all may can more most these those whether under including within'.split(' '));
+const words = s => (s || '').toLowerCase().match(/[a-zà-ÿ0-9]+/g) || [];
+function highlight(text, other) {
+  const ow = new Set(words(other).filter(w => w.length > 3 && !STOP.has(w)));
+  return esc(text).replace(/[A-Za-zÀ-ÿ0-9]+/g, w => ow.has(w.toLowerCase()) ? `<mark>${w}</mark>` : w);
+}
+let PSEL = null;
+function pairList() {
+  const q = p_q.value.toLowerCase().split(/\s+/).filter(Boolean);
+  const rows = D.pairs.filter(p => (!p_track.value || p.track === p_track.value) && (!p_tier.value || p.tier === p_tier.value)
+    && (!p_type.value || p.user_type === p_type.value) && (!p_law.checked || p.reached_law) && (!p_verb.checked || p.verbatim)
+    && q.every(w => [p.org, p.target_id, p.location, p.chunk_text, p.target_text].join(' ').toLowerCase().includes(w)));
+  p_count.textContent = rows.length + ' pairs';
+  p_list.innerHTML = rows.slice(0, 300).map((p, i) => `<tr class="row" data-i="${D.pairs.indexOf(p)}"><td>${esc(p.org)}<div class="muted">${esc(p.user_type)}</div></td>
+    <td>${esc(p.track === 'B' ? (p.location || p.target_id) : p.target_id)}</td><td>${p.tier}${p.verbatim ? ' ·V' : ''}</td><td>${esc(p.llm_relation)}</td><td class="num">${(+p.score).toFixed(1)}</td></tr>`).join('');
+  p_list.querySelectorAll('tr').forEach(tr => tr.onclick = () => { p_list.querySelectorAll('tr').forEach(x => x.classList.remove('sel')); tr.classList.add('sel'); pairDetail(D.pairs[+tr.dataset.i]); });
+}
+function pairDetail(p) {
+  PSEL = p;
+  const tgtTitle = p.track === 'B' ? `Amendment ${esc(p.target_id)} · ${esc(p.location)}` : `Proposal ${esc(p.target_id)}`;
+  const fate = p.track === 'B' ? `${p.survived ? '<span class="badge">survived</span>' : '<span class="badge">dropped</span>'}${p.reached_law ? `<span class="badge">reached the law · ${esc(p.law_unit || '')}</span>` : ''}${p.lead_mep ? `<span class="badge">lead MEP: ${esc(p.lead_mep)}</span>` : ''}${p.carrier_met ? `<span class="badge">recorded meeting: ${esc(p.carrier_met)}</span>` : ''}` : '';
+  p_detail.className = '';
+  p_detail.innerHTML = `<div class="pair"><div><h4>${esc(p.org)} · ${esc(p.user_type)} ${p.url ? `· <a href="${esc(p.url)}" target="_blank">comment</a>` : ''}</h4>
+    <div class="txt">${highlight(p.chunk_text, p.target_text)}</div></div>
+    <div><h4>${tgtTitle}${p.track === 'B' ? ' · inserted words' : ''}</h4><div class="txt">${highlight(p.target_text, p.chunk_text)}</div></div></div>
+    <div style="margin-top:8px">${fate}<span class="badge">${p.tier}</span>${p.verbatim ? `<span class="badge">verbatim run ${p.longest_run} words</span>` : ''}</div>
+    <div class="verdict"><b>Cached verdict</b> (${esc(D.coverage.models.judge)}): <b>${esc(p.llm_relation)}</b> · ${esc(p.llm_direction)}
+      ${p.overlap_quote ? `<div class="muted">“${esc(p.overlap_quote)}”</div>` : ''}
+      <div style="margin-top:8px"><button class="primary" id="live">Judge this pair live</button> <span id="live_out" class="muted"></span></div></div>`;
+  document.getElementById('live').onclick = () => judgeLive(p);
+}
+async function judgeLive(p) {
+  const out = document.getElementById('live_out'); out.textContent = 'asking the judge…';
+  try {
+    const r = await fetch(PROXY + '/judge', {method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({track: p.track, chunk_id: p.chunk_id, target_id: p.target_id})});
+    if (!r.ok) throw new Error('proxy ' + r.status);
+    const rd = r.body.getReader(), dec = new TextDecoder(); let txt = '';
+    for (;;) { const {done, value} = await rd.read(); if (done) break; txt += dec.decode(value); out.innerHTML = '<code>' + esc(txt) + '</code>'; }
+    try { const j = JSON.parse(txt); out.innerHTML = `live: <b>${esc(j.llm_relation)}</b> · ${esc(j.llm_direction)}${j.overlap_quote ? ' · “' + esc(j.overlap_quote) + '”' : ''}`; } catch (e) {}
+  } catch (e) {
+    out.innerHTML = `live judge unavailable (${esc(e.message)}); showing the cached verdict: <b>${esc(p.llm_relation)}</b>. Start it with <code>python -m pipeline.serve</code>.`;
+  }
+}
+['p_q','p_track','p_tier','p_type','p_law','p_verb'].forEach(id => document.getElementById(id).oninput = pairList);
+pairList();
+
+// organisation card
+o_list.innerHTML = D.orgs.map(o => `<option value="${esc(o.name)}">`).join('');
+o_q.onchange = () => {
+  const o = D.orgs.find(x => x.name === o_q.value); if (!o) return;
+  o_card.className = '';
+  o_card.innerHTML = `<div class="grid2"><div><h2>${esc(o.name)}</h2><div class="kv">
+    <div>Type</div><div>${esc(o.user_type)} · ${esc(o.country)}</div>
+    <div>Commented on</div><div>${(o.tracks || []).map(t => t === 'A' ? '2020 inception (A)' : '2021 proposal (B)').join(', ')}</div>
+    <div>Register match</div><div>${esc(o.match_method)}${o.register_name ? ' · ' + esc(o.register_name) : ''}</div>
+    <div>Lobbying cost</div><div>${o.cost != null ? '€' + Math.round(o.cost).toLocaleString() + (o.cost_range ? ' (band midpoint)' : '') : '–'}</div>
+    <div>FTE · EP passes</div><div>${fmt(o.fte)} · ${fmt(o.ep_passes)}</div>
+    <div>Commission meetings 2019–24</div><div>${fmt(o.ec_meetings)}</div>
+    <div>MEP meetings (register)</div><div>${fmt(o.mep_meetings_register)}</div>
+    <div>Registered since</div><div>${fmt(o.reg_date)}</div>
+    ${o.lobbyfacts_url ? `<div>LobbyFacts</div><div><a href="${esc(o.lobbyfacts_url)}" target="_blank">datacard</a></div>` : ''}
+  </div><p class="note">Register figures are 2026, not 2021.</p></div>
+  <div><div class="kv"><div>Influence score</div><div>${(+o.influence).toFixed(1)}</div>
+    <div>Echoes by tier</div><div>T1 ${o.t1} · T2 ${o.t2} · T3 ${o.t3}</div>
+    <div>Echoed amendments in law</div><div>${o.echoed_amendments_in_law}</div>
+    <div>Coalition</div><div>${fmt(o.coalition)}</div>
+    <div>Recorded MEP meetings</div><div>${o.meetings} (${o.ai_meetings} about AI)</div>
+    <div>MEPs met</div><div>${(o.meps_met || []).map(esc).join(', ') || '–'}</div>
+    <div>Track A positions</div><div>${(o.positions || []).map(esc).join('<br>') || '–'}</div></div>
+    <p class="note">Meetings: Integrity Watch, 2020 and Jun–Oct 2024 only.</p></div></div>`;
+};
+
+// tables
+const tb = (id, rows, f) => document.getElementById(id).innerHTML = rows.map(f).join('');
+tb('c_tb', D.carriers, r => `<tr><td>${esc(r.organisation)}</td><td>${esc(r.mep)}</td><td>${esc(r.mep_group)}</td><td class="num">${r.amendments}</td><td class="num">${r.reached_law}</td><td class="num">${r.recorded_meetings}</td></tr>`);
+tb('b_tb', D.brokers, r => `<tr><td>${esc(r.mep)}</td><td>${esc(String(r.groups).replace(/[\[\]']/g, ''))}</td><td class="num">${Math.round(r.betweenness).toLocaleString()}</td></tr>`);
+tb('bg_tb', D.battlegrounds, r => `<tr><td>${esc(r.provision)}</td><td class="num">${r.echoes}</td><td>${esc(String(r.stricter_by).replace(/[\[\]']/g, ''))}</td><td>${esc(String(r.looser_by).replace(/[\[\]']/g, ''))}</td></tr>`);
+tb('a_tb', D.alignment, r => `<tr><td>${esc(r.user_type)}</td><td class="num">${r.positions}</td><td class="num">${pct(r.aligned_share)}</td><td class="num">${pct(r.random_choice_baseline)}</td><td class="num">${r.permutation_ci_low == null ? '–' : pct(r.permutation_ci_low) + '–' + pct(r.permutation_ci_high)}</td></tr>`);
+tb('ac_tb', D.access, r => `<tr><td>${esc(r.user_type)}</td><td class="num">${r.echoed_pairs}</td><td class="num">${pct(r.carrier_met_share)}</td><td class="num">${pct(r.random_tablers_mean)}</td><td class="num">${pct(r.random_ci_low)}–${pct(r.random_ci_high)}</td></tr>`);
+tb('m_tb', D.money_stats.filter(r => r.user_type === 'ALL' && r.sample === 'all matches'), r => `<tr><td>${esc(r.metric)}</td><td class="num">${r.n}</td><td class="num">${(+r.spearman_rho).toFixed(2)}</td><td class="num">${(+r.ci_low).toFixed(2)} – ${(+r.ci_high).toFixed(2)}</td></tr>`);
+
+// money scatter
+(function () {
+  const traces = TYPES.map(t => { const r = D.money.filter(m => m.user_type === t && m.lobbying_cost_eur > 0);
+    return {type: 'scatter', mode: 'markers', name: t, x: r.map(m => m.lobbying_cost_eur), y: r.map(m => m.influence), text: r.map(m => m.name),
+      hovertemplate: '%{text}<br>€%{x:,.0f}<br>influence %{y:.0f}<extra></extra>', marker: {color: tcol(t), size: 8, opacity: .8}}; });
+  Plotly.newPlot('f_money', traces, layout({height: 420, xaxis: {type: 'log', title: 'lobbying cost, € (2026 register, log)', gridcolor: css('--grid')},
+    yaxis: {title: 'influence score (Track B)', gridcolor: css('--grid')}}), CFG);
+})();
+
+// Track A heatmap
+(function () {
+  const H = D.heatmap; if (!H.issues) return;
+  Plotly.newPlot('f_heat', [{type: 'heatmap', x: H.types, y: H.issues, z: H.z, zmin: 0, zmax: 1, colorscale: [[0, css('--surface')], [1, css('--c0')]],
+    text: H.n, hovertemplate: '%{y} · %{x}<br>aligned %{z:.0%} of %{text} positions<extra></extra>', colorbar: {tickformat: '.0%'}}],
+    layout({height: 440, margin: {l: 175, r: 10, t: 10, b: 120}, showlegend: false}), CFG);
+})();
+
+// ask the graph
+function showRows(cypher, rows, live) {
+  const cols = rows.length ? Object.keys(rows[0]) : [];
+  ask_out.className = '';
+  ask_out.innerHTML = `<pre>${esc(cypher)}</pre><div class="muted">${live ? 'live answer' : 'prepared answer (cached)'} · ${rows.length} rows</div>
+    <div class="scroll"><table><thead><tr>${cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${cols.map(c => `<td>${esc(typeof r[c] === 'object' ? JSON.stringify(r[c]) : r[c])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+ask_prepared.innerHTML = D.prepared.map((p, i) => `<button data-i="${i}">${esc(p.q)}</button>`).join('');
+ask_prepared.querySelectorAll('button').forEach(b => b.onclick = () => { const p = D.prepared[+b.dataset.i]; ask_q.value = p.q; showRows(p.cypher, p.rows, false); });
+ask_go.onclick = async () => {
+  const q = ask_q.value.trim(); if (!q) return;
+  const prep = D.prepared.find(p => p.q === q);
+  ask_out.className = 'muted'; ask_out.textContent = 'writing a query…';
+  try {
+    const r = await fetch(PROXY + '/ask', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({question: q})});
+    const j = await r.json(); if (!r.ok) throw new Error(j.error || r.status);
+    showRows(j.cypher, j.rows, true);
+  } catch (e) {
+    if (prep) showRows(prep.cypher, prep.rows, false);
+    else { ask_out.className = 'muted'; ask_out.innerHTML = `live answer unavailable (${esc(e.message)}). Start <code>python -m pipeline.serve</code>, or pick a prepared question.`; }
+  }
+};
+
+// method & coverage
+(function () {
+  const C = D.coverage, th = C.thresholds || {};
+  const b = th.s08 && th.s08.B || {}, a = th.s08 && th.s08.A || {};
+  cov.innerHTML = `<div class="grid2"><div class="kv">
+    <div>Tracks</div><div>A: 2020 inception comments → Commission proposal · B: 2021 comments → EP committee amendments → EP report → Regulation 2024/1689</div>
+    <div>Matching</div><div>embeddings (${esc(C.models.embeddings)}), TF-IDF, 3-gram overlap; proposal 6-grams and widely quoted 12-grams masked</div>
+    <div>Threshold</div><div>99th percentile of the same chunks scored against DSA amendments: A ${(+a.tau_match || 0).toFixed(2)}, B ${(+b.tau_match || 0).toFixed(2)}; verbatim null hit rate B ${(100 * (b.null_verbatim_rate || 0)).toFixed(3)}%</div>
+    <div>Judge</div><div>${esc(C.models.judge)} (second opinion ${esc(C.models.second)}); ${Object.entries(C.judged_pairs).map(([k, v]) => k + ': ' + v + ' pairs').join(', ')}</div>
+    <div>Tiers</div><div>T1 verbatim and implements · T2 verbatim, or implements / partial · T3 above threshold only</div>
+  </div><div class="kv">
+    <div>Register matches</div><div>${Object.entries(C.match_methods).map(([k, v]) => esc(k) + ' ' + v).join(' · ')}</div>
+    <div>Register figures</div><div>2026 snapshot (LobbyFacts, Integrity Watch), not 2021</div>
+    <div>MEP meetings</div><div>${C.orgs_with_meetings} of ${C.orgs} organisations with ≥1 recorded meeting; data covers 2020 and Jun–Oct 2024 only</div>
+    <div>Final act</div><div>articles from the 2026-07-27 consolidation (M1 changes flagged), recitals and "as adopted" text from the 2024 OJ</div>
+    <div>Placeholder sources</div><div>${C.degraded_sources.length ? C.degraded_sources.map(esc).join(', ') : 'none'}</div>
+    <div>Caveat</div><div>Similarity is not causation: shared outside sources (HLEG, OECD, White Paper) and coalition texts produce echoes too.</div>
+  </div></div>`;
+})();
+</script>
+</body>
+</html>
