@@ -48,7 +48,7 @@ Diagrams of the system, the stage flow, the echo funnel, the graph schema and th
 
 ## The pipeline
 
-Each stage is `pipeline/sNN_*.py`. `python -m pipeline.run` runs them in order; each load is idempotent (`MERGE` on a unique key) and stamped with `source` and `run_id`.
+Each stage is `pipeline/sNN_*.py`. `python -m pipeline.run` runs them in order.
 
 | Stage | What it does | Writes |
 |---|---|---|
